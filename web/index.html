@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FleetMemory — flight recorder for an agent fleet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0E1116; --panel:#151B24; --raised:#1D2530; --line:#29323F;
+  --text:#E9EDF3; --muted:#8B96A5;
+  --gold:#E9B45B; --violet:#8F7FF7; --sky:#62B6E8;
+  --ok:#58C99B; --warn:#D98E3B; --bad:#E06C75;
+  --disp:"Space Grotesk",sans-serif; --mono:"IBM Plex Mono",monospace;
+}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--text);font:14px/1.5 var(--mono);min-height:100vh}
+button{font:inherit;cursor:pointer}
+input{font:inherit}
+
+header{display:flex;align-items:baseline;gap:14px;padding:18px 24px;border-bottom:1px solid var(--line)}
+header h1{font:700 20px var(--disp);letter-spacing:.5px}
+header h1 .dot{color:var(--gold)}
+header .sub{color:var(--muted);font-size:12px}
+header .subject{margin-left:auto;display:flex;gap:8px;align-items:center;color:var(--muted);font-size:12px}
+header .subject input{background:var(--panel);border:1px solid var(--line);color:var(--text);padding:6px 10px;border-radius:6px;width:150px}
+
+.grid{display:grid;grid-template-columns:330px 1fr 360px;gap:14px;padding:14px 18px;align-items:start}
+@media (max-width:1100px){.grid{grid-template-columns:1fr}}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.card h2{font:500 11px var(--disp);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);padding:10px 14px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center}
+.card h2 .swatch{width:8px;height:8px;border-radius:50%}
+
+/* chat */
+.chat{display:flex;flex-direction:column;height:305px}
+.msgs{flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.msg{max-width:92%;padding:7px 10px;border-radius:8px;font-size:12.5px;white-space:pre-wrap}
+.msg.user{align-self:flex-end;background:var(--raised);border:1px solid var(--line)}
+.msg.bot{align-self:flex-start;background:transparent;border:1px solid var(--line);color:var(--text)}
+.msg.bot b{font-weight:500}
+.chat form{display:flex;border-top:1px solid var(--line)}
+.chat input{flex:1;background:transparent;border:0;color:var(--text);padding:10px 12px;outline:none}
+.chat button{background:transparent;border:0;color:var(--gold);padding:0 14px}
+.chat button:disabled{color:var(--muted)}
+.typing{color:var(--muted);font-size:12px;padding:0 12px 8px;display:none}
+
+/* dial */
+#dialCard{position:relative}
+#dial{display:block;width:100%;max-width:660px;height:auto;margin:0 auto}
+.hint{position:absolute;inset:auto 0 46%;text-align:center;color:var(--muted);font-size:12.5px;pointer-events:none}
+.node circle{transition:all .6s ease}
+.node text{font:11px var(--mono);fill:var(--text)}
+.node .val{fill:var(--muted);font-size:10px}
+.node.ghost circle{fill-opacity:.12;stroke-opacity:.35}
+.node.ghost text{fill:var(--muted);text-decoration:line-through}
+.ring{fill:none;stroke:var(--line);stroke-dasharray:2 5}
+.core{fill:var(--raised);stroke:var(--gold);stroke-width:1.5}
+.coreLabel{font:700 13px var(--disp);fill:var(--text);text-anchor:middle}
+.coreSub{font:10px var(--mono);fill:var(--muted);text-anchor:middle}
+
+/* quarantine tray */
+.tray{border-top:1px solid var(--line);padding:10px 14px;display:flex;align-items:center;gap:10px;min-height:52px}
+.tray .label{color:var(--warn);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.tray .chips{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+.chip{border:1px dashed var(--warn);color:var(--warn);border-radius:6px;padding:3px 8px;font-size:11.5px}
+.chip.gone{opacity:0;transition:opacity .8s}
+.tray button{background:var(--gold);color:#151208;border:0;border-radius:6px;padding:7px 14px;font:500 12px var(--disp)}
+.tray button:disabled{background:var(--raised);color:var(--muted)}
+.tray .empty{color:var(--muted);font-size:12px}
+
+/* journal */
+.journal{max-height:640px;overflow-y:auto}
+.jrow{padding:8px 12px;border-left:3px solid var(--line);border-bottom:1px solid var(--line);font-size:12px}
+.jrow .head{display:flex;gap:8px;align-items:baseline}
+.jrow .t{color:var(--muted);font-size:10.5px}
+.jrow .d{font-weight:500}
+.jrow .reason{color:var(--muted);margin-top:2px;font-size:11.5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.jrow.accepted,.jrow.accepted_superseding{border-left-color:var(--ok)}
+.jrow.accepted .d,.jrow.accepted_superseding .d{color:var(--ok)}
+.jrow.quarantined{border-left-color:var(--warn)}.jrow.quarantined .d{color:var(--warn)}
+.jrow.rejected{border-left-color:var(--bad)}.jrow.rejected .d{color:var(--bad)}
+.jrow.accepted_by_verifier,.jrow.invalidated{border-left-color:var(--gold)}
+.jrow.accepted_by_verifier .d{color:var(--gold)}
+.jrow .res{margin-top:2px;font-size:11px;color:var(--gold)}
+.jrow .res.rejected{color:var(--bad)}
+
+footer{padding:10px 24px;color:var(--muted);font-size:11px;border-top:1px solid var(--line);margin-top:8px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+</style>
+</head>
+<body>
+<header>
+  <h1>FLEETMEMORY<span class="dot">▪</span></h1>
+  <span class="sub">flight recorder for an agent fleet — every fact earns its way in</span>
+  <span class="subject">customer <input id="subject" value="acme-corp" aria-label="Customer key"></span>
+</header>
+
+<div class="grid">
+  <div>
+    <div class="card" style="margin-bottom:14px">
+      <h2><span class="swatch" style="background:var(--violet)"></span>Agent Alex</h2>
+      <div class="chat" id="chat-sdr-alex">
+        <div class="msgs"></div>
+        <div class="typing">alex is thinking…</div>
+        <form><input placeholder="Talk to Alex as the customer…" aria-label="Message to Alex"><button>Send</button></form>
+      </div>
+    </div>
+    <div class="card">
+      <h2><span class="swatch" style="background:var(--sky)"></span>Agent Maria</h2>
+      <div class="chat" id="chat-sdr-maria">
+        <div class="msgs"></div>
+        <div class="typing">maria is thinking…</div>
+        <form><input placeholder="Come back a week later — Maria remembers…" aria-label="Message to Maria"><button>Send</button></form>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="dialCard">
+    <h2><span class="swatch" style="background:var(--gold)"></span>Memory dial — inner ring is what the fleet believes now; outer ring is superseded history</h2>
+    <svg id="dial" viewBox="0 0 640 560" role="img" aria-label="Memory graph"></svg>
+    <div class="hint" id="hint">No durable facts yet.<br>Tell an agent something worth remembering.</div>
+    <div class="tray">
+      <span class="label">Quarantine</span>
+      <div class="chips" id="chips"><span class="empty">empty — the gate saw nothing suspicious</span></div>
+      <button id="runVerifier" disabled>Run verifier</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="swatch" style="background:var(--line)"></span>Gate journal — every write decision, on the record</h2>
+    <div class="journal" id="journal"></div>
+  </div>
+</div>
+
+<footer>CockroachDB keeps the facts (bi-temporal, vector-indexed) · AWS AgentCore keeps the sessions · nothing enters memory without passing the gate</footer>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=v=>String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const subjectEl=$("#subject");
+const AGENT_COLOR={"sdr-alex":"var(--violet)","sdr-maria":"var(--sky)"};
+let state={facts:[],journal:[],pending:0};
+
+async function fetchState(){
+  try{
+    const r=await fetch(`/api/state?subject=${encodeURIComponent(subjectEl.value)}`);
+    state=await r.json(); render();
+  }catch(e){/* server restarting — keep last state */}
+}
+
+function render(){renderDial();renderJournal();renderTray();}
+
+function renderDial(){
+  const svg=$("#dial"); const cx=320,cy=270;
+  const active=state.facts.filter(f=>!f.invalid_at);
+  const ghosts=state.facts.filter(f=>f.invalid_at);
+  $("#hint").style.display=active.length?"none":"block";
+  const node=(f,i,n,r,ghost)=>{
+    const a=-Math.PI/2+(2*Math.PI*i)/Math.max(n,1);
+    const x=cx+r*Math.cos(a), y=cy+r*Math.sin(a);
+    const col=ghost?"var(--muted)":(AGENT_COLOR[f.agent]||"var(--gold)");
+    const val=typeof f.object==="object"?(f.object.value??JSON.stringify(f.object)):f.object;
+    return `<g class="node${ghost?" ghost":""}">
+      <line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="var(--line)" stroke-width="1" ${ghost?'stroke-dasharray="2 4"':""}/>
+      <circle cx="${x}" cy="${y}" r="${ghost?7:10+6*(f.confidence||0.5)}" fill="${col}" fill-opacity=".18" stroke="${col}" stroke-width="1.5"/>
+      <text x="${x}" y="${y-14}" text-anchor="middle">${esc(f.predicate)}</text>
+      <text class="val" x="${x}" y="${y+24}" text-anchor="middle">${esc(String(val).slice(0,18))}${ghost?" ⌫":""}</text>
+    </g>`;
+  };
+  svg.innerHTML=`
+    <circle class="ring" cx="${cx}" cy="${cy}" r="150"/>
+    <circle class="ring" cx="${cx}" cy="${cy}" r="225"/>
+    ${ghosts.map((f,i)=>node(f,i,ghosts.length,225,true)).join("")}
+    ${active.map((f,i)=>node(f,i,active.length,150,false)).join("")}
+    <circle class="core" cx="${cx}" cy="${cy}" r="52"/>
+    <text class="coreLabel" x="${cx}" y="${cy-2}">${esc(subjectEl.value)}</text>
+    <text class="coreSub" x="${cx}" y="${cy+16}">${active.length} facts · ${ghosts.length} superseded</text>`;
+}
+
+function renderJournal(){
+  $("#journal").innerHTML=state.journal.map(j=>{
+    const p=j.payload||{}; const t=j.ts.slice(11,19);
+    const what=p.predicate?`${esc(p.predicate)} = ${esc(JSON.stringify((p.object||{}).value??p.object))}`:"";
+    const res=j.resolution?`<div class="res ${esc(j.resolution)}">verifier → ${esc(j.resolution)}: ${esc(j.resolution_reason||"")}</div>`:"";
+    return `<div class="jrow ${esc(j.decision)}" title="${esc(j.reason||"")}">
+      <div class="head"><span class="t">${esc(t)}</span><span class="d">${esc(j.decision.replaceAll("_"," "))}</span>
+      <span style="color:var(--muted)">${what}</span></div>
+      <div class="reason">${esc(j.reason||"")}</div>${res}</div>`;
+  }).join("");
+}
+
+function renderTray(){
+  const pend=state.journal.filter(j=>j.decision==="quarantined"&&!j.resolution);
+  const chips=$("#chips");
+  chips.innerHTML=pend.length?pend.map(j=>{
+    const p=j.payload||{};
+    return `<span class="chip">${esc(p.predicate)} = ${esc(JSON.stringify((p.object||{}).value??"?"))}</span>`;
+  }).join(""):'<span class="empty">empty — the gate saw nothing suspicious</span>';
+  $("#runVerifier").disabled=!pend.length;
+}
+
+for(const name of ["sdr-alex","sdr-maria"]){
+  const root=$(`#chat-${name}`);
+  const form=root.querySelector("form"), input=root.querySelector("input"),
+        msgs=root.querySelector(".msgs"), typing=root.querySelector(".typing"),
+        btn=root.querySelector("button");
+  form.addEventListener("submit",async e=>{
+    e.preventDefault();
+    const text=input.value.trim(); if(!text)return;
+    msgs.insertAdjacentHTML("beforeend",`<div class="msg user">${esc(text)}</div>`);
+    input.value=""; typing.style.display="block"; btn.disabled=true;
+    msgs.scrollTop=msgs.scrollHeight;
+    try{
+      const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({agent:name,subject:subjectEl.value,text})});
+      const out=await r.json();
+      msgs.insertAdjacentHTML("beforeend",`<div class="msg bot">${esc(out.reply)}</div>`);
+    }catch(err){
+      msgs.insertAdjacentHTML("beforeend",`<div class="msg bot">Connection lost — try again.</div>`);
+    }
+    typing.style.display="none"; btn.disabled=false;
+    msgs.scrollTop=msgs.scrollHeight;
+    fetchState();
+  });
+}
+
+$("#runVerifier").addEventListener("click",async()=>{
+  const b=$("#runVerifier"); b.disabled=true; b.textContent="Judging…";
+  try{ await fetch("/api/verifier",{method:"POST"}); }catch(e){}
+  b.textContent="Run verifier"; fetchState();
+});
+
+async function loadHistory(){
+  for(const name of ["sdr-alex","sdr-maria"]){
+    try{
+      const r=await fetch(`/api/history?agent_name=${name}&subject=${encodeURIComponent(subjectEl.value)}`);
+      const {messages}=await r.json();
+      const msgs=$(`#chat-${name} .msgs`);
+      msgs.innerHTML=(messages||[]).map(m=>
+        `<div class="msg ${m.role==="user"?"user":"bot"}">${esc(m.text)}</div>`).join("");
+      msgs.scrollTop=msgs.scrollHeight;
+    }catch(e){}
+  }
+}
+
+subjectEl.addEventListener("change",()=>{fetchState();loadHistory();});
+fetchState(); loadHistory(); setInterval(fetchState,4000);
+</script>
+</body>
+</html>

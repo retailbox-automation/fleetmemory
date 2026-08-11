@@ -1,0 +1,7 @@
+psycopg[binary]>=3.3
+boto3>=1.40
+langgraph>=1.2
+langgraph-checkpoint-aws>=1.2
+pytest>=9
+fastapi>=0.115
+uvicorn>=0.30

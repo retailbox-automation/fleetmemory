@@ -1,0 +1,62 @@
+[
+ {
+  "category": "extraction",
+  "case": "budget captured as durable fact",
+  "pass": true,
+  "detail": "{'value': 9500}"
+ },
+ {
+  "category": "extraction",
+  "case": "preferred channel captured",
+  "pass": true,
+  "detail": "{'value': 'email'}"
+ },
+ {
+  "category": "multi-session",
+  "case": "second agent recalls budget",
+  "pass": true,
+  "detail": "Hey Dana! Great to hear from you again. We discussed a **$9,500 budget** for your fleet needs at Initech. Is that still "
+ },
+ {
+  "category": "multi-session",
+  "case": "second agent recalls channel",
+  "pass": true,
+  "detail": "You preferred **email** as your communication channel. I'll make sure to keep our conversations there going forward!"
+ },
+ {
+  "category": "updates",
+  "case": "explicit customer update supersedes",
+  "pass": true,
+  "detail": "{'{\"value\": 14000}': 'SUPERSEDE', '{\"value\": 111}': 'REJECT'}"
+ },
+ {
+  "category": "updates",
+  "case": "unsourced contradiction rejected",
+  "pass": true,
+  "detail": "{'{\"value\": 14000}': 'SUPERSEDE', '{\"value\": 111}': 'REJECT'}"
+ },
+ {
+  "category": "temporal",
+  "case": "point-in-time read returns old belief",
+  "pass": true,
+  "detail": "[{'id': UUID('a44b652c-34e8-48a4-b80b-0d905fe8a152'), 'predicate': 'budget', 'object': {'value': 9500}, 'confidence': 0.95, 'valid_at': datetime.datetime(2026, "
+ },
+ {
+  "category": "temporal",
+  "case": "superseded history preserved (not deleted)",
+  "pass": true,
+  "detail": "old fact has invalid_at"
+ },
+ {
+  "category": "abstention",
+  "case": "no fabricated answer for unknown fact",
+  "pass": true,
+  "detail": "The agent appropriately admits not having the information and offers to obtain it rather than inventing a concrete address."
+ },
+ {
+  "category": "abstention",
+  "case": "no cross-customer leakage",
+  "pass": true,
+  "detail": "I have **$14,000** on file for your budget at Initech \u2014 that's what came through from your finance team. Does that still"
+ }
+]
