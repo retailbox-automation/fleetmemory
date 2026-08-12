@@ -5,7 +5,9 @@
 🔗 **Live demo:** https://pskmxv5sm4k3fj2rjoh2aoijka0ofgob.lambda-url.us-east-1.on.aws/
 🎬 **Demo video:** _(link in the Devpost submission)_
 
-Talk to agent Alex as a customer. Come back "a week later" and talk to agent Maria — she remembers everything Alex learned. Try to slip a contradictory "fact" into memory — the write-gate quarantines it, and an adversarial verifier decides its fate with a reasoned, journaled verdict.
+Talk to agent Alex as a customer. Come back "a week later" and talk to agent Maria — she remembers everything Alex learned. Then hit **"😈 hallucinate a fact"**: a rogue agent asserts an unsourced value through the exact same write path — the gate quarantines it, and an adversarial verifier rejects it with a reasoned, journaled verdict.
+
+![FleetMemory dashboard — memory dial with a superseded fact ghosted on the outer ring, gate journal with verifier verdicts](assets/dashboard.png)
 
 Built for the CockroachDB × AWS hackathon **"Build with Agentic Memory"**.
 
@@ -76,9 +78,9 @@ Memory here is not a chat log — it is a **system of record with governance**:
 
 ## 3. Real-World Impact
 
-This is an anonymized reference implementation of patterns we run **in production** at our automation agency, where an owner's multi-agent operation answers ~1,000+ real memory queries a month ("where did we leave off with X", deal facts, decision history). Two production lessons shaped the design:
+This is an anonymized reference implementation of patterns we run **in production** at our automation agency, where an owner's multi-agent operation answers ~1,000+ real memory queries a month ("where did we leave off with X", deal facts, decision history) — internal ops metrics; anonymized here, client data stays out of this repo. Two production lessons shaped the design:
 
-- A single ungated writer once flooded our production memory graph with 4,500 junk records in a day. **Governance is not optional** — that incident is why the gate journals every decision.
+- A single ungated writer once flooded our production memory graph with 4,500 junk records in a day (same source: our internal incident log). **Governance is not optional** — that incident is why the gate journals every decision.
 - Cross-session recall is table stakes; the differentiator is **trusting what's in memory**. Sales is the sharpest case: a hallucinated discount in shared memory is a real financial liability. The verifier-catch in the demo is the exact mechanism that prevents it.
 
 ## 4. Production Readiness
@@ -102,6 +104,7 @@ This is an anonymized reference implementation of patterns we run **in productio
 - **Observability:** the gate journal *is* the audit log — every write attempt, decision, reason, and verifier verdict is queryable SQL (and browsable in the demo UI, and readable over MCP).
 - **Resilience:** serializable transactions with retry, best-effort layers isolated (a vector-layer failure never breaks a conversation; a failed judge fails closed), deploy is an idempotent script, budget alert guards cost.
 - **Honest limitations:** demo auth is a public URL (no login); DB credentials ride Lambda env vars (Secrets Manager would be next); the verifier judges one contradiction at a time (no batch reconciliation yet); mini-LongMemEval is 10 cases, not the full benchmark — we prefer a small honest harness over big dirty numbers (LongMemEval's own answer key has known issues).
+- **What's next:** Secrets Manager for credentials, batch reconciliation for the verifier, a third fleet agent (order-ops) to show the pattern generalizing beyond sales, community summaries over the C-SPANN index. The schema already runs on CockroachDB's inherently distributed architecture — the same cluster primitive that would let a fleet scale across regions without redesigning the memory layer (we have not load-tested multi-region; that is a platform property, not our benchmark).
 
 ## 5. Creativity & Originality
 

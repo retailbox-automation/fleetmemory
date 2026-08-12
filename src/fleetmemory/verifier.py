@@ -85,7 +85,7 @@ def _resolve_one(conn, judge, decision_id, payload) -> dict:
     else:
         try:
             verdict = judge(existing, payload)
-        except (json.JSONDecodeError, KeyError) as e:
+        except Exception as e:  # any judge failure (incl. Bedrock/boto3) fails THIS row closed
             verdict = {"verdict": "REJECT", "reason": f"judge failed ({type(e).__name__}); fail closed"}
     approved = verdict.get("verdict") == "SUPERSEDE"
 

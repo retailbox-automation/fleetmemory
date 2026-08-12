@@ -68,6 +68,8 @@ header .subject input{background:var(--panel);border:1px solid var(--line);color
 .chip.gone{opacity:0;transition:opacity .8s}
 .tray button{background:var(--gold);color:#151208;border:0;border-radius:6px;padding:7px 14px;font:500 12px var(--disp)}
 .tray button:disabled{background:var(--raised);color:var(--muted)}
+.tray button.rogue{background:transparent;border:1px dashed var(--bad);color:var(--bad)}
+.tray button.rogue:disabled{border-color:var(--line);color:var(--muted)}
 .tray .empty{color:var(--muted);font-size:12px}
 
 /* journal */
@@ -125,6 +127,7 @@ footer{padding:10px 24px;color:var(--muted);font-size:11px;border-top:1px solid 
     <div class="tray">
       <span class="label">Quarantine</span>
       <div class="chips" id="chips"><span class="empty">empty — the gate saw nothing suspicious</span></div>
+      <button id="injectRogue" class="rogue" title="A rogue agent asserts an unsourced value — watch the gate catch it">😈 hallucinate a fact</button>
       <button id="runVerifier" disabled>Run verifier</button>
     </div>
   </div>
@@ -183,7 +186,8 @@ function renderDial(){
 function renderJournal(){
   $("#journal").innerHTML=state.journal.map(j=>{
     const p=j.payload||{}; const t=j.ts.slice(11,19);
-    const what=p.predicate?`${esc(p.predicate)} = ${esc(JSON.stringify((p.object||{}).value??p.object))}`:"";
+    const conf=(typeof p.confidence==="number")?` · conf ${p.confidence}`:"";
+    const what=p.predicate?`${esc(p.predicate)} = ${esc(JSON.stringify((p.object||{}).value??p.object))}${esc(conf)}`:"";
     const res=j.resolution?`<div class="res ${esc(j.resolution)}">verifier → ${esc(j.resolution)}: ${esc(j.resolution_reason||"")}</div>`:"";
     return `<div class="jrow ${esc(j.decision)}" title="${esc(j.reason||"")}">
       <div class="head"><span class="t">${esc(t)}</span><span class="d">${esc(j.decision.replaceAll("_"," "))}</span>
@@ -231,6 +235,15 @@ $("#runVerifier").addEventListener("click",async()=>{
   const b=$("#runVerifier"); b.disabled=true; b.textContent="Judging…";
   try{ await fetch("/api/verifier",{method:"POST"}); }catch(e){}
   b.textContent="Run verifier"; fetchState();
+});
+
+$("#injectRogue").addEventListener("click",async()=>{
+  const b=$("#injectRogue"); b.disabled=true; b.textContent="injecting…";
+  try{
+    await fetch("/api/rogue",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({subject:subjectEl.value})});
+  }catch(e){}
+  b.textContent="😈 hallucinate a fact"; b.disabled=false; fetchState();
 });
 
 async function loadHistory(){

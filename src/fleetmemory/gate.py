@@ -12,6 +12,8 @@ before any branching — a writer may grow a second call-site later.
 import json
 from dataclasses import dataclass, field
 
+# Fixed policy thresholds, deliberately not deployment config: the gate's
+# contract must read the same in every environment it protects.
 MIN_CONFIDENCE = 0.3
 SUPERSEDE_MARGIN = 0.05
 MAX_OBJECT_BYTES = 8192

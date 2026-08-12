@@ -65,7 +65,11 @@ def state(subject: str):
             cur.execute(
                 """SELECT ts, decision, reason, fact_payload, resolution,
                           resolution_reason
-                   FROM gate_decisions ORDER BY ts DESC LIMIT 40""")
+                   FROM gate_decisions
+                   WHERE fact_payload->>'subject' = %s
+                   ORDER BY ts DESC LIMIT 40""",
+                (subject,),
+            )
             journal = cur.fetchall()
             return rows, journal
 
@@ -116,3 +120,47 @@ def run_verifier():
     with _lock:
         verdicts = verifier.resolve_pending(conn())
     return {"verdicts": verdicts}
+
+
+class RogueIn(BaseModel):
+    subject: str
+
+
+@app.post("/api/rogue")
+def inject_rogue(body: RogueIn):
+    """Demo control: a rogue agent asserts a plausible-but-unsourced value.
+
+    Goes through the exact same gate as every other write — the point of the
+    demo is that the gate quarantines it and the verifier rejects it.
+    """
+    with _lock:
+        c = conn()
+        active = facts.current_facts(c, body.subject)
+        if not active:
+            return {"error": "no facts yet — teach an agent something first"}
+        # prefer a numeric fact (budget-style) for a punchy contradiction
+        target = next(
+            (f for f in active
+             if isinstance(f["object"], dict)
+             and any(isinstance(v, (int, float)) for v in f["object"].values())),
+            active[0],
+        )
+        obj = dict(target["object"]) if isinstance(target["object"], dict) else {"value": target["object"]}
+        mutated = False
+        for k, v in obj.items():
+            if isinstance(v, (int, float)) and not isinstance(v, bool):
+                obj[k] = max(1, int(v) // 10)
+                mutated = True
+                break
+        if not mutated:
+            k = next(iter(obj))
+            obj[k] = f"{obj[k]} (misremembered)"
+        confidence = max(0.3, float(target["confidence"]) - 0.1)
+        r = facts.assert_fact(
+            c, subject_key=body.subject, predicate=target["predicate"],
+            obj=obj, confidence=confidence, agent_name="sdr-rogue",
+            provenance={"source": "unsourced",
+                        "note": "no customer utterance on file — the agent 'remembered' this value"},
+        )
+    return {"injected": {"predicate": target["predicate"], "object": obj,
+                         "confidence": confidence}, **r}
