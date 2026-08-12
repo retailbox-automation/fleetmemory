@@ -22,6 +22,13 @@ input{font:inherit}
 
 header{display:flex;align-items:baseline;gap:14px;padding:18px 24px;border-bottom:1px solid var(--line);flex-wrap:wrap}
 @media (max-width:900px){header .sub{display:none}}
+
+/* the story strip — tells a first-time visitor what to do, in order */
+.story{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 24px;border-bottom:1px solid var(--line);background:var(--panel);font-size:12.5px;color:var(--text)}
+.story .stepn{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--gold);color:#151208;font:700 11px var(--disp);margin-right:7px;flex:none}
+.story .arr{color:var(--muted)}
+.story .why{margin-left:auto;color:var(--muted)}
+@media (max-width:1100px){.story .why{display:none}}
 header h1{font:700 20px var(--disp);letter-spacing:.5px}
 header h1 .dot{color:var(--gold)}
 header .sub{color:var(--muted);font-size:12px}
@@ -34,6 +41,7 @@ header .subject input{background:var(--panel);border:1px solid var(--line);color
 .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .card h2{font:500 11px var(--disp);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);padding:10px 14px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center}
 .card h2 .swatch{width:8px;height:8px;border-radius:50%}
+.card h2 .step{margin-left:auto;color:var(--gold);letter-spacing:.05em;font-size:10px;text-transform:none;font-family:var(--mono);white-space:nowrap}
 
 /* chat */
 .chat{display:flex;flex-direction:column;height:305px}
@@ -110,14 +118,23 @@ footer{padding:10px 24px;color:var(--muted);font-size:11px;border-top:1px solid 
 <body>
 <header>
   <h1>FLEETMEMORY<span class="dot">▪</span></h1>
-  <span class="sub">flight recorder for an agent fleet — every fact earns its way in</span>
+  <span class="sub">two AI sales agents · one shared memory · nothing gets in without earning it</span>
   <span class="subject">customer <input id="subject" value="acme-corp" aria-label="Customer key"></span>
 </header>
+
+<div class="story" role="note" aria-label="How to try the demo">
+  <span><span class="stepn">1</span>Tell Alex a fact — "our budget is $20k"</span>
+  <span class="arr">→</span>
+  <span><span class="stepn">2</span>Ask Maria — she remembers what Alex learned</span>
+  <span class="arr">→</span>
+  <span><span class="stepn">3</span>Hit 😈 to sneak in a lie — the memory refuses it</span>
+  <span class="why">every decision lands in the journal on the right</span>
+</div>
 
 <div class="grid">
   <div>
     <div class="card" style="margin-bottom:14px">
-      <h2><span class="swatch" style="background:var(--violet)"></span>Agent Alex</h2>
+      <h2><span class="swatch" style="background:var(--violet)"></span>Agent Alex<span class="step">step 1 · teach him something</span></h2>
       <div class="chat" id="chat-sdr-alex">
         <div class="msgs"></div>
         <div class="typing">alex is thinking…</div>
@@ -125,7 +142,7 @@ footer{padding:10px 24px;color:var(--muted);font-size:11px;border-top:1px solid 
       </div>
     </div>
     <div class="card">
-      <h2><span class="swatch" style="background:var(--sky)"></span>Agent Maria</h2>
+      <h2><span class="swatch" style="background:var(--sky)"></span>Agent Maria<span class="step">step 2 · she remembers</span></h2>
       <div class="chat" id="chat-sdr-maria">
         <div class="msgs"></div>
         <div class="typing">maria is thinking…</div>
@@ -161,6 +178,35 @@ const subjectEl=$("#subject");
 const AGENT_COLOR={"sdr-alex":"var(--violet)","sdr-maria":"var(--sky)"};
 let state={facts:[],journal:[],pending:0};
 
+// speak human, not machine: $14,000 instead of {"amount":14000,"currency":"USD"}
+function fmtVal(o){
+  if(o==null)return "?";
+  if(typeof o!=="object")return String(o);
+  if(o.amount!=null){
+    const cur=o.currency==="USD"?"$":(o.currency?o.currency+" ":"");
+    return cur+Number(o.amount).toLocaleString("en-US");
+  }
+  if(o.value!=null)return String(o.value);
+  return JSON.stringify(o);
+}
+const DECISION_LABEL={
+  accepted:"✓ accepted",
+  accepted_superseding:"✓ accepted — update",
+  accepted_by_verifier:"✓ approved by verifier",
+  quarantined:"⚠ held for review",
+  rejected:"✕ refused",
+};
+const REASON_LABEL={
+  clean:"passed every check",
+  contradiction_needs_verifier:"contradicts what the fleet believes — waiting for the verifier",
+  duplicate:"already known — nothing to add",
+  junk_predicate:"refused: empty field name",
+  junk_object:"refused: empty value",
+  low_confidence:"refused: too uncertain to store",
+  oversized_object:"refused: value too large",
+  contradiction_resolved_by_confidence:"stronger evidence — belief updated",
+};
+
 async function fetchState(){
   try{
     const r=await fetch(`/api/state?subject=${encodeURIComponent(subjectEl.value)}`);
@@ -179,11 +225,11 @@ function renderDial(){
     const a=-Math.PI/2+(2*Math.PI*i)/Math.max(n,1);
     const x=cx+r*Math.cos(a), y=cy+r*Math.sin(a);
     const col=ghost?"var(--muted)":(AGENT_COLOR[f.agent]||"var(--gold)");
-    const val=typeof f.object==="object"?(f.object.value??JSON.stringify(f.object)):f.object;
+    const val=fmtVal(f.object);
     return `<g class="node${ghost?" ghost":""}">
       <line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="var(--line)" stroke-width="1" ${ghost?'stroke-dasharray="2 4"':""}/>
       <circle cx="${x}" cy="${y}" r="${ghost?7:10+6*(f.confidence||0.5)}" fill="${col}" fill-opacity=".18" stroke="${col}" stroke-width="1.5"/>
-      <text x="${x}" y="${y-14}" text-anchor="middle">${esc(f.predicate)}</text>
+      <text x="${x}" y="${y-14}" text-anchor="middle">${esc(f.predicate.replaceAll("_"," "))}</text>
       <text class="val" x="${x}" y="${y+24}" text-anchor="middle">${esc(String(val).slice(0,18))}${ghost?" ⌫":""}</text>
     </g>`;
   };
@@ -208,13 +254,14 @@ function renderJournal(){
     const p=j.payload||{}; const t=j.ts.slice(11,19);
     const key=j.ts+(j.resolution||"");
     const fresh=!firstPaint&&!seenRows.has(key);
-    const conf=(typeof p.confidence==="number")?` · conf ${p.confidence}`:"";
-    const what=p.predicate?`${esc(p.predicate)} = ${esc(JSON.stringify((p.object||{}).value??p.object))}${esc(conf)}`:"";
-    const res=j.resolution?`<div class="res ${esc(j.resolution)}">verifier → ${esc(j.resolution)}: ${esc(j.resolution_reason||"")}</div>`:"";
+    const conf=(typeof p.confidence==="number")?` · confidence ${Math.round(p.confidence*100)}%`:"";
+    const what=p.predicate?`${esc(p.predicate.replaceAll("_"," "))} → ${esc(fmtVal(p.object))}${esc(conf)}`:"";
+    const resWord=j.resolution==="rejected"?"refused":j.resolution;
+    const res=j.resolution?`<div class="res ${esc(j.resolution)}">verifier → ${esc(resWord)}: ${esc(j.resolution_reason||"")}</div>`:"";
     return `<div class="jrow ${esc(j.decision)}${fresh?" new":""}" title="${esc(j.reason||"")}">
-      <div class="head"><span class="t">${esc(t)}</span><span class="d">${esc(j.decision.replaceAll("_"," "))}</span>
+      <div class="head"><span class="t">${esc(t)}</span><span class="d">${esc(DECISION_LABEL[j.decision]||j.decision.replaceAll("_"," "))}</span>
       <span class="what" title="${what}">${what}</span></div>
-      <div class="reason">${esc(j.reason||"")}</div>${res}</div>`;
+      <div class="reason">${esc(REASON_LABEL[j.reason]||j.reason||"")}</div>${res}</div>`;
   }).join("");
   seenRows=new Set(state.journal.map(j=>j.ts+(j.resolution||"")));
 }
@@ -226,7 +273,7 @@ function renderTray(){
   const draw=()=>{
     chips.innerHTML=pend.length?pend.map(j=>{
       const p=j.payload||{};
-      return `<span class="chip">${esc(p.predicate)} = ${esc(JSON.stringify((p.object||{}).value??"?"))}</span>`;
+      return `<span class="chip">${esc((p.predicate||"?").replaceAll("_"," "))} → ${esc(fmtVal(p.object))}</span>`;
     }).join(""):'<span class="empty">nothing suspicious yet — try 😈</span>';
     $("#runVerifier").disabled=!pend.length;
   };
