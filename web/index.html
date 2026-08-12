@@ -20,7 +20,8 @@ body{background:var(--bg);color:var(--text);font:14px/1.5 var(--mono);min-height
 button{font:inherit;cursor:pointer}
 input{font:inherit}
 
-header{display:flex;align-items:baseline;gap:14px;padding:18px 24px;border-bottom:1px solid var(--line)}
+header{display:flex;align-items:baseline;gap:14px;padding:18px 24px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+@media (max-width:900px){header .sub{display:none}}
 header h1{font:700 20px var(--disp);letter-spacing:.5px}
 header h1 .dot{color:var(--gold)}
 header .sub{color:var(--muted);font-size:12px}
@@ -43,9 +44,12 @@ header .subject input{background:var(--panel);border:1px solid var(--line);color
 .msg.bot b{font-weight:500}
 .chat form{display:flex;border-top:1px solid var(--line)}
 .chat input{flex:1;background:transparent;border:0;color:var(--text);padding:10px 12px;outline:none}
-.chat button{background:transparent;border:0;color:var(--gold);padding:0 14px}
+.chat input::placeholder{color:var(--muted);opacity:1}
+.chat button{background:transparent;border:0;color:var(--gold);padding:0 14px;transition:color .15s}
+.chat button:hover:not(:disabled){color:#F5CE8A}
 .chat button:disabled{color:var(--muted)}
-.typing{color:var(--muted);font-size:12px;padding:0 12px 8px;display:none}
+.typing{color:var(--muted);font-size:12px;padding:0 12px 8px;display:none;animation:think 1.4s ease-in-out infinite}
+@keyframes think{50%{opacity:.4}}
 
 /* dial */
 #dialCard{position:relative}
@@ -62,21 +66,27 @@ header .subject input{background:var(--panel);border:1px solid var(--line);color
 .coreSub{font:10px var(--mono);fill:var(--muted);text-anchor:middle}
 
 /* quarantine tray */
-.tray{border-top:1px solid var(--line);padding:10px 14px;display:flex;align-items:center;gap:10px;min-height:52px}
+.tray{border-top:1px solid var(--line);padding:10px 14px;display:flex;align-items:center;gap:10px;min-height:52px;flex-wrap:wrap}
 .tray .label{color:var(--warn);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
 .tray .chips{display:flex;gap:6px;flex-wrap:wrap;flex:1}
 .chip{border:1px dashed var(--warn);color:var(--warn);border-radius:6px;padding:3px 8px;font-size:11.5px}
 .chip.gone{opacity:0;transition:opacity .8s}
-.tray button{background:var(--gold);color:#151208;border:0;border-radius:6px;padding:7px 14px;font:500 12px var(--disp)}
+.tray button{background:var(--gold);color:#151208;border:0;border-radius:6px;padding:7px 14px;font:500 12px var(--disp);transition:filter .15s}
+.tray button:hover:not(:disabled){filter:brightness(1.12)}
 .tray button:disabled{background:var(--raised);color:var(--muted)}
 .tray button.rogue{background:transparent;border:1px dashed var(--bad);color:var(--bad)}
+.tray button.rogue:hover:not(:disabled){filter:none;background:rgba(224,108,117,.08)}
 .tray button.rogue:disabled{border-color:var(--line);color:var(--muted)}
+#runVerifier:not(:disabled){animation:beckon 1.6s ease-out infinite}
+@keyframes beckon{0%{box-shadow:0 0 0 0 rgba(233,180,91,.45)}70%{box-shadow:0 0 0 9px rgba(233,180,91,0)}100%{box-shadow:0 0 0 0 rgba(233,180,91,0)}}
+@media (prefers-reduced-motion: reduce){#runVerifier:not(:disabled){animation:none}}
 .tray .empty{color:var(--muted);font-size:12px}
 
 /* journal */
 .journal{max-height:640px;overflow-y:auto}
-.jrow{padding:8px 12px;border-left:3px solid var(--line);border-bottom:1px solid var(--line);font-size:12px}
+.jrow{padding:8px 12px;border-left:1px solid var(--line);border-bottom:1px solid var(--line);font-size:12px}
 .jrow .head{display:flex;gap:8px;align-items:baseline}
+.jrow .head .what{color:var(--muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .jrow .t{color:var(--muted);font-size:10.5px}
 .jrow .d{font-weight:500}
 .jrow .reason{color:var(--muted);margin-top:2px;font-size:11.5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -86,8 +96,11 @@ header .subject input{background:var(--panel);border:1px solid var(--line);color
 .jrow.rejected{border-left-color:var(--bad)}.jrow.rejected .d{color:var(--bad)}
 .jrow.accepted_by_verifier,.jrow.invalidated{border-left-color:var(--gold)}
 .jrow.accepted_by_verifier .d{color:var(--gold)}
-.jrow .res{margin-top:2px;font-size:11px;color:var(--gold)}
-.jrow .res.rejected{color:var(--bad)}
+.jrow .res{margin-top:4px;font-size:12px;color:var(--gold);background:rgba(233,180,91,.08);border:1px solid rgba(233,180,91,.25);border-radius:5px;padding:4px 7px}
+.jrow .res.rejected{color:var(--bad);background:rgba(224,108,117,.08);border-color:rgba(224,108,117,.3)}
+.jrow.new{animation:slidein .45s ease-out}
+@keyframes slidein{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.journal .empty{padding:14px;color:var(--muted);font-size:12px}
 
 footer{padding:10px 24px;color:var(--muted);font-size:11px;border-top:1px solid var(--line);margin-top:8px}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
@@ -127,7 +140,7 @@ footer{padding:10px 24px;color:var(--muted);font-size:11px;border-top:1px solid 
     <div class="hint" id="hint">No durable facts yet.<br>Tell an agent something worth remembering.</div>
     <div class="tray">
       <span class="label">Quarantine</span>
-      <div class="chips" id="chips"><span class="empty">empty — the gate saw nothing suspicious</span></div>
+      <div class="chips" id="chips"><span class="empty">nothing suspicious yet — try 😈</span></div>
       <button id="injectRogue" class="rogue" title="A rogue agent asserts an unsourced value — watch the gate catch it">😈 hallucinate a fact</button>
       <button id="runVerifier" disabled>Run verifier</button>
     </div>
@@ -184,27 +197,43 @@ function renderDial(){
     <text class="coreSub" x="${cx}" y="${cy+16}">${active.length} facts · ${ghosts.length} superseded</text>`;
 }
 
+let seenRows=new Set();
 function renderJournal(){
+  if(!state.journal.length){
+    $("#journal").innerHTML='<div class="empty">No write decisions yet for this customer — every attempt will land here, on the record.</div>';
+    return;
+  }
+  const firstPaint=seenRows.size===0;
   $("#journal").innerHTML=state.journal.map(j=>{
     const p=j.payload||{}; const t=j.ts.slice(11,19);
+    const key=j.ts+(j.resolution||"");
+    const fresh=!firstPaint&&!seenRows.has(key);
     const conf=(typeof p.confidence==="number")?` · conf ${p.confidence}`:"";
     const what=p.predicate?`${esc(p.predicate)} = ${esc(JSON.stringify((p.object||{}).value??p.object))}${esc(conf)}`:"";
     const res=j.resolution?`<div class="res ${esc(j.resolution)}">verifier → ${esc(j.resolution)}: ${esc(j.resolution_reason||"")}</div>`:"";
-    return `<div class="jrow ${esc(j.decision)}" title="${esc(j.reason||"")}">
+    return `<div class="jrow ${esc(j.decision)}${fresh?" new":""}" title="${esc(j.reason||"")}">
       <div class="head"><span class="t">${esc(t)}</span><span class="d">${esc(j.decision.replaceAll("_"," "))}</span>
-      <span style="color:var(--muted)">${what}</span></div>
+      <span class="what" title="${what}">${what}</span></div>
       <div class="reason">${esc(j.reason||"")}</div>${res}</div>`;
   }).join("");
+  seenRows=new Set(state.journal.map(j=>j.ts+(j.resolution||"")));
 }
 
 function renderTray(){
   const pend=state.journal.filter(j=>j.decision==="quarantined"&&!j.resolution);
   const chips=$("#chips");
-  chips.innerHTML=pend.length?pend.map(j=>{
-    const p=j.payload||{};
-    return `<span class="chip">${esc(p.predicate)} = ${esc(JSON.stringify((p.object||{}).value??"?"))}</span>`;
-  }).join(""):'<span class="empty">empty — the gate saw nothing suspicious</span>';
-  $("#runVerifier").disabled=!pend.length;
+  const hadChips=chips.querySelector(".chip");
+  const draw=()=>{
+    chips.innerHTML=pend.length?pend.map(j=>{
+      const p=j.payload||{};
+      return `<span class="chip">${esc(p.predicate)} = ${esc(JSON.stringify((p.object||{}).value??"?"))}</span>`;
+    }).join(""):'<span class="empty">nothing suspicious yet — try 😈</span>';
+    $("#runVerifier").disabled=!pend.length;
+  };
+  if(hadChips&&!pend.length){
+    chips.querySelectorAll(".chip").forEach(c=>c.classList.add("gone"));
+    setTimeout(draw,780);
+  }else draw();
 }
 
 for(const name of ["sdr-alex","sdr-maria"]){
