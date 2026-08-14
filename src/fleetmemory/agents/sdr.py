@@ -45,8 +45,11 @@ class ChatState(TypedDict):
 
 
 class FleetAgent:
-    def __init__(self, name: str, memory_id: str | None = None):
+    def __init__(self, name: str, memory_id: str | None = None, historian: bool = False):
         self.name = name
+        # historian agents (account managers) also read the bi-temporal change
+        # history — "what did we believe last week, and what changed since"
+        self.historian = historian
         self.conn = db.connect()
         saver = AgentCoreMemorySaver(
             memory_id=memory_id or os.environ["AGENTCORE_MEMORY_ID"],
@@ -74,6 +77,18 @@ class FleetAgent:
                 f" at {r['valid_at']:%Y-%m-%d})"
                 for r in rows
             ]
+        if self.historian:
+            changed = facts.fact_history(self.conn, state["subject_key"])
+            if changed:
+                block.append("Belief change history (bi-temporal — nothing is deleted):")
+                block += [
+                    f"- {r['predicate']} was {json.dumps(r['object'], ensure_ascii=False)}"
+                    f" (held {r['valid_at']:%Y-%m-%d} → {r['invalid_at']:%Y-%m-%d}"
+                    f", learned by {r['source_agent'] or 'unknown'})"
+                    + (f", replaced by {json.dumps(r['replaced_by'], ensure_ascii=False)}"
+                       if r["replaced_by"] is not None else ", withdrawn")
+                    for r in changed
+                ]
         last_user = next(
             (m["text"] for m in reversed(state["messages"]) if m["role"] == "user"), "")
         if last_user:

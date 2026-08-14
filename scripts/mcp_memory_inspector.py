@@ -81,11 +81,12 @@ def main() -> None:
         "SELECT decision, count(*) AS n FROM gate_decisions GROUP BY decision ORDER BY n DESC"):
         print(f"  {row}")
 
-    print("\n== Current beliefs about acme-corp ==")
+    SUBJECT = os.environ.get("FM_SUBJECT", "acme-corp")
+    print(f"\n== Current beliefs about {SUBJECT} ==")
     for row in mcp.query(
-        """SELECT f.predicate, f.object, f.confidence
+        f"""SELECT f.predicate, f.object, f.confidence
            FROM facts f JOIN subjects s ON s.id = f.subject_id
-           WHERE s.external_key = 'acme-corp' AND f.invalid_at IS NULL"""):
+           WHERE s.external_key = '{SUBJECT}' AND f.invalid_at IS NULL"""):
         print(f"  {row}")
 
 

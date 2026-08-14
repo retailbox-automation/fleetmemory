@@ -120,6 +120,26 @@ def current_facts(conn, subject_key: str, predicate: str | None = None, as_of=No
     return db.run_txn(conn, txn)
 
 
+def fact_history(conn, subject_key: str, limit: int = 20) -> list:
+    """Superseded beliefs with their validity windows — what changed and when."""
+
+    def txn(cur):
+        cur.execute(
+            """SELECT f.predicate, f.object, f.confidence, f.valid_at, f.invalid_at,
+                      a.name AS source_agent, nf.object AS replaced_by
+               FROM facts f
+               JOIN subjects s ON s.id = f.subject_id
+               LEFT JOIN agents a ON a.id = f.source_agent_id
+               LEFT JOIN facts nf ON nf.id = f.invalidated_by
+               WHERE s.external_key = %s AND f.invalid_at IS NOT NULL
+               ORDER BY f.invalid_at DESC LIMIT %s""",
+            (subject_key, limit),
+        )
+        return cur.fetchall()
+
+    return db.run_txn(conn, txn)
+
+
 def gate_journal(conn, limit: int = 50) -> list:
     def txn(cur):
         cur.execute(

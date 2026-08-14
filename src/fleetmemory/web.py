@@ -29,9 +29,11 @@ def conn():
     return _conn
 
 
+# three differentiated roles: Alex = front-line SDR; Maria = account manager
+# who also reads the bi-temporal change history; the verifier judges quarantine
 def agent(name: str) -> FleetAgent:
     if name not in _agents:
-        _agents[name] = FleetAgent(name)
+        _agents[name] = FleetAgent(name, historian=(name == "sdr-maria"))
     return _agents[name]
 
 

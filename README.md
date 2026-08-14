@@ -7,7 +7,13 @@
 
 Talk to agent Alex as a customer. Come back "a week later" and talk to agent Maria — she remembers everything Alex learned. Then hit **"😈 hallucinate a fact"**: a rogue agent asserts an unsourced value through the exact same write path — the gate quarantines it, and an adversarial verifier rejects it with a reasoned, journaled verdict.
 
-![FleetMemory dashboard — memory dial with a superseded fact ghosted on the outer ring, gate journal with verifier verdicts](assets/dashboard.png)
+![FleetMemory — two agent chats around one shared memory; a hallucinated budget crossed out with a REFUSED stamp and the verifier's reason on the card](assets/dashboard.png)
+
+The lie, mid-quarantine — a gold **HELD FOR REVIEW** stamp and a pulsing "Run the verifier" button, right above the real fact it contradicts:
+
+![A false budget of 1,800 held for review directly above the real 18,000 fact](assets/quarantine.png)
+
+Every visitor gets a **fresh sandbox** (their own customer key) — no login, no leftover state from other people's pokes.
 
 Built for the CockroachDB × AWS hackathon **"Build with Agentic Memory"**.
 
@@ -66,12 +72,19 @@ Memory here is not a chat log — it is a **system of record with governance**:
 - **Bi-temporal forgetting.** A correction never deletes: the old fact gets `invalid_at` + `invalidated_by`, so `current_facts(as_of=…)` reconstructs what the fleet believed at any past moment.
 - **Two recall paths.** Structured facts (typed predicate → JSONB object, confidence, source agent) plus episodic semantic recall: every customer utterance is embedded (Titan v2, 1024-d) and retrieved by meaning through the C-SPANN index, scoped per subject.
 - **Fleet-shared, subject-scoped.** Any agent recalls what any other agent learned about a customer; customers never leak into each other (verified by test).
+- **Differentiated roles, one memory.** Alex is a front-line SDR; Maria is an account manager whose recall additionally includes the **bi-temporal change history** ("budget was $18,000 until Aug 14, replaced by $12,000 — learned by Alex"), so she can answer *what changed since last week*, not just *what is true now*; the verifier is the fleet's skeptic with its own default-REJECT policy.
 
 ## 2. Technical Implementation
 
 - **CockroachDB tools used (2 required):**
   - **Distributed Vector Indexing (C-SPANN)** — `memory_embeddings` with `VECTOR INDEX (subject_id, embedding)`; ANN search uses the canonical prefix-equality + `ORDER BY embedding <-> query` access path. Vectors are inserted row-by-row (preview constraint), similarity is Euclidean.
   - **Managed MCP Server** — `scripts/mcp_memory_inspector.py` is a headless MCP client (streamable HTTP, service-account API key) that inspects the fleet's memory — gate decisions, current beliefs — through `https://cockroachlabs.cloud/mcp`, the same server any AI IDE can attach to.
+
+![Managed MCP inspector reading gate decisions and current beliefs from CockroachDB Cloud](assets/mcp-inspector.png)
+
+The same memory, read straight over SQL — facts and the gate journal with verifier verdicts:
+
+![psql against CockroachDB Cloud: 7 active facts and a journal showing two quarantined writes rejected by the verifier](assets/crdb-console.png)
 - **AWS services:** Bedrock (Claude Haiku 4.5 for reasoning/extraction/verification, Titan v2 for embeddings), AgentCore Memory (checkpointer), Lambda + EventBridge Scheduler (hosting the live demo, cold-start warmer), Budgets (cost guard).
 - **CockroachDB specifics handled explicitly:** UUID keys (no sequence hotspots), client-side retry on `SQLSTATE 40001` (serializable by default) in one `run_txn()` wrapper, no LISTEN/NOTIFY (UI polls), partial index on active facts.
 - **Known upstream incompatibility, documented:** LangGraph's `AsyncPostgresSaver` fails on CockroachDB (`jsonb_each_text` SRF alias + multidimensional array serialization). We verified it live and chose AgentCore as the checkpointer — the two-layer design above — rather than patching around it.
@@ -100,6 +113,7 @@ This is an anonymized reference implementation of patterns we run **in productio
 | abstention | no fabricated answer for unknown fact | ✅ |
 | abstention | no cross-customer leakage | ✅ |
 
+- **Red-teamed, reproducibly** (`scripts/redteam.py`, full run in `evals/redteam.json`): 30 adversarial writes across 5 attack classes against the real gate + verifier. Result: **24/24 blocked** of everything that had signal to catch — junk, oversized payloads, absurd-confidence guesses, and all 9 unsourced contradictions (quarantined, then rejected by the verifier citing missing provenance) — while passing **9/10** legitimate customer-confirmed updates. p50 gate latency 293 ms. Two edges found and disclosed rather than tuned away: unsourced *novel* claims (nothing to contradict) currently pass the deterministic gate — a documented scope boundary; and one legitimate update was lost to a write-before-verify race, traced in the journal. Rerun it yourself against any cluster.
 - **Tests:** 14 fast integration tests against a live CockroachDB cluster (gate, bi-temporal reads, verifier resolution paths with a stubbed judge, vector scoping) + opt-in e2e suite (`FLEETMEM_E2E=1`).
 - **Observability:** the gate journal *is* the audit log — every write attempt, decision, reason, and verifier verdict is queryable SQL (and browsable in the demo UI, and readable over MCP).
 - **Resilience:** serializable transactions with retry, best-effort layers isolated (a vector-layer failure never breaks a conversation; a failed judge fails closed), deploy is an idempotent script, budget alert guards cost.
@@ -109,8 +123,8 @@ This is an anonymized reference implementation of patterns we run **in productio
 ## 5. Creativity & Originality
 
 - **"Every fact earns its way in"** — most memory demos show recall; this one shows *refusal*. The climactic moment is the system declining to remember something false, with a reasoned verdict on the record.
-- **The memory dial** — the UI renders belief as an instrument: what the fleet believes now on the inner ring, superseded history ghosted on the outer ring, quarantine as a visible holding tray with a "Run verifier" action.
-- **Bi-temporal UX** — "forgetting" is an auditable state transition, not a deletion. You can watch history being preserved.
+- **Memory a non-engineer can read** — the shared memory is the hero of the screen: plain-language fact cards ("Budget — 18,000 — learned by Alex · ✓ passed the gate"), a gold HELD FOR REVIEW stamp on quarantined writes, a red REFUSED stamp with the verifier's reason right on the card. The full decision log stays one click away for engineers.
+- **Bi-temporal UX** — "forgetting" is an auditable state transition, not a deletion. Superseded beliefs stay visible in the history, and Maria reasons over them out loud.
 
 ---
 
@@ -127,8 +141,8 @@ src/fleetmemory/
   llm.py          # Bedrock converse wrapper
   agents/sdr.py   # FleetAgent: recall -> respond -> extract -> gate
   web.py          # FastAPI demo app
-web/index.html    # the memory dial UI (no build step)
-scripts/          # deploy_lambda.py, longmemeval.py, mcp_memory_inspector.py, smoke_agentcore.py
+web/index.html    # the shared-memory UI (no build step)
+scripts/          # deploy_lambda.py, longmemeval.py, redteam.py, mcp_memory_inspector.py, smoke_agentcore.py
 tests/            # 14 integration tests + opt-in e2e
 ```
 
@@ -150,6 +164,7 @@ export FLEETMEM_MODEL=us.anthropic.claude-haiku-4-5-20251001-v1:0
 # open http://localhost:8300
 
 .venv/bin/python scripts/longmemeval.py      # live eval (Bedrock calls)
+.venv/bin/python scripts/redteam.py          # adversarial eval: 30 attacks vs the gate (Bedrock calls)
 # for docker/Lambda deploy: put your cluster's CA cert at certs/root.crt first
 .venv/bin/python scripts/deploy_lambda.py    # deploy your own public URL
 ```
