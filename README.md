@@ -143,7 +143,7 @@ src/fleetmemory/
   web.py          # FastAPI demo app
 web/index.html    # the shared-memory UI (no build step)
 scripts/          # deploy_lambda.py, longmemeval.py, redteam.py, mcp_memory_inspector.py, smoke_agentcore.py
-tests/            # 14 integration tests + opt-in e2e
+tests/            # 17 integration tests + opt-in e2e
 ```
 
 ## Run it yourself
