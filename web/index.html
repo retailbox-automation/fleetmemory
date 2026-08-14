@@ -219,15 +219,7 @@ function render(){
       </div>`;
     }).join("");
   }
-  html+=active.map(f=>{
-    const k="f"+f.predicate+JSON.stringify(f.object);
-    const who=agentLabel(f.agent);
-    return `<div class="fact${fresh(k)}">
-      <div class="k">${esc(f.predicate.replaceAll("_"," "))}</div>
-      <div class="v">${esc(fmtVal(f.object))}</div>
-      <div class="meta">learned by ${esc(who)} · <span class="yes">✓ passed the gate</span></div>
-    </div>`;
-  }).join("");
+  // verdicts stay above the fold: refusals render before the fact list
   html+=refused.map(j=>{
     const p=j.payload||{}; const k="r"+j.ts;
     return `<div class="fact refused${fresh(k)}">
@@ -235,6 +227,15 @@ function render(){
       <div class="k">${esc((p.predicate||"?").replaceAll("_"," "))}</div>
       <div class="v">${esc(fmtVal(p.object))}</div>
       <div class="meta">${esc(j.resolution_reason||REASON_LABEL[j.reason]||j.reason||"the gate said no")}</div>
+    </div>`;
+  }).join("");
+  html+=active.map(f=>{
+    const k="f"+f.predicate+JSON.stringify(f.object);
+    const who=agentLabel(f.agent);
+    return `<div class="fact${fresh(k)}">
+      <div class="k">${esc(f.predicate.replaceAll("_"," "))}</div>
+      <div class="v">${esc(fmtVal(f.object))}</div>
+      <div class="meta">learned by ${esc(who)} · <span class="yes">✓ passed the gate</span></div>
     </div>`;
   }).join("");
 
