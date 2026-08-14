@@ -3,7 +3,7 @@
 **A fleet of AI sales agents with one shared, governed memory — where every fact has to earn its way in.**
 
 🔗 **Live demo:** https://pskmxv5sm4k3fj2rjoh2aoijka0ofgob.lambda-url.us-east-1.on.aws/
-🎬 **Demo video:** _(link in the Devpost submission)_
+🎬 **Demo video:** https://youtu.be/T7SjR3_ppBo
 
 Talk to agent Alex as a customer. Come back "a week later" and talk to agent Maria — she remembers everything Alex learned. Then hit **"😈 hallucinate a fact"**: a rogue agent asserts an unsourced value through the exact same write path — the gate quarantines it, and an adversarial verifier rejects it with a reasoned, journaled verdict.
 
