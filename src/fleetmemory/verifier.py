@@ -21,11 +21,12 @@ import json
 from . import db, gate, llm
 
 VERDICT_SYSTEM = """You are a memory verifier for a fleet of sales agents.
-A new fact was QUARANTINED because it contradicts existing memory. Decide:
+A new fact was QUARANTINED — either it contradicts existing memory, or it
+arrived without provenance (existing_facts will be empty). Decide:
 
 - "SUPERSEDE": ONLY if the candidate's provenance contains strong, explicit
-  evidence — e.g. a direct customer utterance clearly stating the new value
-  as an update or correction ("our budget is now X", "we switched to Y").
+  evidence — e.g. a direct customer utterance clearly stating the value
+  ("our budget is now X", "we switched to Y").
 - "REJECT": in every other case. No utterance, vague wording, secondhand or
   unsourced values, agent guesses — all REJECT. When uncertain, REJECT.
 
@@ -46,7 +47,7 @@ def resolve_pending(conn, judge=None, limit: int = 20) -> list[dict]:
 
     def fetch(cur):
         cur.execute(
-            """SELECT id, fact_payload FROM gate_decisions
+            """SELECT id, reason, fact_payload FROM gate_decisions
                WHERE decision = %s AND resolution IS NULL
                ORDER BY ts LIMIT %s""",
             (gate.QUARANTINED, limit),
@@ -57,11 +58,12 @@ def resolve_pending(conn, judge=None, limit: int = 20) -> list[dict]:
     outcomes = []
     for row in pending:
         payload = row["fact_payload"]
-        outcomes.append(_resolve_one(conn, judge, row["id"], payload))
+        outcomes.append(_resolve_one(conn, judge, row["id"], payload,
+                                     quarantine_reason=row["reason"]))
     return outcomes
 
 
-def _resolve_one(conn, judge, decision_id, payload) -> dict:
+def _resolve_one(conn, judge, decision_id, payload, quarantine_reason="") -> dict:
     subject_key, predicate = payload["subject"], payload["predicate"]
 
     def fetch_existing(cur):
@@ -78,11 +80,12 @@ def _resolve_one(conn, judge, decision_id, payload) -> dict:
         return cur.fetchall()
 
     existing = db.run_txn(conn, fetch_existing)
-    if not existing:
+    if not existing and quarantine_reason != "needs_provenance":
         # conflict evaporated (facts were invalidated meanwhile) — nothing to
         # judge against; candidate would pass a fresh gate run instead.
         verdict = {"verdict": "REJECT", "reason": "no active conflicting fact remains; re-assert instead"}
     else:
+        # needs_provenance rows are judged on their provenance alone
         try:
             verdict = judge(existing, payload)
         except Exception as e:  # any judge failure (incl. Bedrock/boto3) fails THIS row closed

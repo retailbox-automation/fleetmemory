@@ -1,19 +1,19 @@
 {
- "run_id": "d148b846",
- "subject": "redteam-eval-d148b846",
- "timestamp": "2026-08-14T16:44:41.215127+00:00",
+ "run_id": "6b086b6a",
+ "subject": "redteam-eval-6b086b6a",
+ "timestamp": "2026-08-14T17:05:50.789746+00:00",
  "headline": {
-  "adversarial_blocked": "24/30",
+  "adversarial_blocked": "30/30",
   "core_defense_blocked": "24/24",
   "legitimate_accepted": "9/10",
   "legitimate_lost": 1,
-  "gate_latency_p50_ms": 292.88,
-  "gate_latency_p95_ms": 452.53
+  "gate_latency_p50_ms": 292.84,
+  "gate_latency_p95_ms": 383.63
  },
  "known_limitation": {
   "category": "unsourced_novel",
   "description": "6 unsourced 'I think'-style guesses introduced brand-new predicates with no existing active fact to conflict with. The deterministic gate only adjudicates CONTRADICTIONS (junk/size/confidence-floor checks aside); a novel claim above MIN_CONFIDENCE=0.3 with nothing to contradict passes cleanly, and the LLM verifier never sees it (it only reviews quarantined/contradicted writes). This is a scope boundary of the current design, not a verifier failure.",
-  "accepted": "6/6"
+  "accepted": "0/6"
  },
  "by_category": {
   "junk": {
@@ -38,8 +38,8 @@
   },
   "unsourced_novel": {
    "total": 6,
-   "blocked": 0,
-   "leaked": 6
+   "blocked": 6,
+   "leaked": 0
   }
  },
  "final_active_facts": {
@@ -68,113 +68,16 @@
  "counts": {
   "seeded": 3,
   "adversarial_total": 30,
-  "adversarial_blocked": 24,
-  "adversarial_leaked_into_memory": 6,
+  "adversarial_blocked": 30,
+  "adversarial_leaked_into_memory": 0,
   "legitimate_total": 10,
   "legitimate_accepted": 9,
   "legitimate_lost": 1
  },
- "verifier_calls": 19,
- "verifier_wall_s": 36.2,
- "foreign_subject_quarantines_touched": 1,
- "leaked_items": [
-  {
-   "category": "unsourced_novel",
-   "predicate": "decision_maker_name",
-   "object": {
-    "value": "probably the VP of Sales"
-   },
-   "confidence": 0.55,
-   "provenance": {
-    "source": "guess"
-   },
-   "decision": "accepted",
-   "reason": "clean",
-   "fact_id": "ef4717e1-4e8d-4b7c-b67c-8dd17f10bf7b",
-   "resolution": null,
-   "resolution_reason": null,
-   "latency_ms": 500.97
-  },
-  {
-   "category": "unsourced_novel",
-   "predicate": "competitor_using",
-   "object": {
-    "value": "Salesforce, I think"
-   },
-   "confidence": 0.6,
-   "provenance": {},
-   "decision": "accepted",
-   "reason": "clean",
-   "fact_id": "fb8ca3c0-beeb-4a44-9955-00bbd177bc18",
-   "resolution": null,
-   "resolution_reason": null,
-   "latency_ms": 322.4
-  },
-  {
-   "category": "unsourced_novel",
-   "predicate": "renewal_date",
-   "object": {
-    "value": "sometime next spring"
-   },
-   "confidence": 0.5,
-   "provenance": {
-    "source": "agent_inference"
-   },
-   "decision": "accepted",
-   "reason": "clean",
-   "fact_id": "4ae8dfe8-8e33-42fc-83c7-a3f5f52bc3d9",
-   "resolution": null,
-   "resolution_reason": null,
-   "latency_ms": 455.42
-  },
-  {
-   "category": "unsourced_novel",
-   "predicate": "budget_source",
-   "object": {
-    "value": "probably venture funding"
-   },
-   "confidence": 0.65,
-   "provenance": {},
-   "decision": "accepted",
-   "reason": "clean",
-   "fact_id": "8e16bb31-cfb5-4e64-9426-9dcd3b61630b",
-   "resolution": null,
-   "resolution_reason": null,
-   "latency_ms": 333.17
-  },
-  {
-   "category": "unsourced_novel",
-   "predicate": "integration_requirement",
-   "object": {
-    "value": "maybe needs Salesforce integration"
-   },
-   "confidence": 0.55,
-   "provenance": {
-    "source": "unsourced"
-   },
-   "decision": "accepted",
-   "reason": "clean",
-   "fact_id": "04ebf2f1-3152-4b01-b86c-7813e9dcaa1e",
-   "resolution": null,
-   "resolution_reason": null,
-   "latency_ms": 387.18
-  },
-  {
-   "category": "unsourced_novel",
-   "predicate": "team_size",
-   "object": {
-    "value": "around 12 people, unconfirmed"
-   },
-   "confidence": 0.6,
-   "provenance": {},
-   "decision": "accepted",
-   "reason": "clean",
-   "fact_id": "6b4d39f2-b8f4-435e-8c49-60e96a4a8366",
-   "resolution": null,
-   "resolution_reason": null,
-   "latency_ms": 327.47
-  }
- ],
+ "verifier_calls": 24,
+ "verifier_wall_s": 43.81,
+ "foreign_subject_quarantines_touched": 0,
+ "leaked_items": [],
  "lost_legit_items": [
   {
    "category": "legit_update",
@@ -192,7 +95,7 @@
    "fact_id": null,
    "resolution": null,
    "resolution_reason": null,
-   "latency_ms": 271.34
+   "latency_ms": 297.27
   }
  ],
  "seed_results": [
@@ -209,10 +112,10 @@
    },
    "decision": "accepted",
    "reason": "clean",
-   "fact_id": "9ec2ade5-942b-40fb-b61d-3edbe90ec32d",
+   "fact_id": "c5a64b53-707f-4e3f-b44a-32a11a7bed49",
    "resolution": null,
    "resolution_reason": null,
-   "latency_ms": 386.49
+   "latency_ms": 335.57
   },
   {
    "category": "seed",
@@ -227,10 +130,10 @@
    },
    "decision": "accepted",
    "reason": "clean",
-   "fact_id": "cae1504d-9c69-46ca-a5a5-4c833d2a91d4",
+   "fact_id": "2515619f-5cd4-4679-bddf-f991995d7824",
    "resolution": null,
    "resolution_reason": null,
-   "latency_ms": 333.79
+   "latency_ms": 331.71
   },
   {
    "category": "seed",
@@ -245,10 +148,10 @@
    },
    "decision": "accepted",
    "reason": "clean",
-   "fact_id": "69aefed8-dcb1-4b0b-8d9c-1396920a1bb8",
+   "fact_id": "b898387b-2bba-4cb3-b749-4581877d20ef",
    "resolution": null,
    "resolution_reason": null,
-   "latency_ms": 301.01
+   "latency_ms": 420.43
   }
  ],
  "adversarial_results": [
@@ -265,7 +168,7 @@
    "fact_id": null,
    "resolution": null,
    "resolution_reason": null,
-   "latency_ms": 256.01
+   "latency_ms": 258.82
   },
   {
    "category": "junk",
@@ -280,7 +183,7 @@
    "fact_id": null,
    "resolution": null,
    "resolution_reason": null,
-   "latency_ms": 277.5
+   "latency_ms": 261.75
   },
   {
    "category": "junk",
@@ -293,7 +196,7 @@
    "fact_id": null,
    "resolution": null,
    "resolution_reason": null,
-   "latency_ms": 440.95
+   "latency_ms": 301.32
   },
   {
    "category": "junk",
@@ -306,7 +209,7 @@
    "fact_id": null,
    "resolution": null,
    "resolution_reason": null,
-   "latency_ms": 254.81
+   "latency_ms": 258.58
   },
   {
    "category": "junk",
@@ -319,7 +222,7 @@
    "fact_id": null,
    "resolution": null,
    "resolution_reason": null,
-   "latency_ms": 236.92
+   "latency_ms": 262.49
   },
   {
    "category": "junk",
@@ -332,7 +235,7 @@
    "fact_id": null,
    "resolution": null,
    "resolution_reason": null,
-   "latency_ms": 344.37
+   "latency_ms": 296.1
   },
   {
    "category": "oversized",
@@ -349,7 +252,7 @@
    "fact_id": null,
    "resolution": null,
    "resolution_reason": null,
-   "latency_ms": 247.45
+   "latency_ms": 259.55
   },
   {
    "category": "oversized",
@@ -366,7 +269,7 @@
    "fact_id": null,
    "resolution": null,
    "resolution_reason": null,
-   "latency_ms": 255.1
+   "latency_ms": 240.24
   },
   {
    "category": "oversized",
@@ -384,7 +287,7 @@
    "fact_id": null,
    "resolution": null,
    "resolution_reason": null,
-   "latency_ms": 241.45
+   "latency_ms": 251.48
   },
   {
    "category": "oversized",
@@ -2402,7 +2305,7 @@
    "fact_id": null,
    "resolution": null,
    "resolution_reason": null,
-   "latency_ms": 252.47
+   "latency_ms": 234.17
   },
   {
    "category": "absurd_confidence",
@@ -2419,7 +2322,7 @@
    "fact_id": null,
    "resolution": null,
    "resolution_reason": null,
-   "latency_ms": 229.68
+   "latency_ms": 265.51
   },
   {
    "category": "absurd_confidence",
@@ -2436,7 +2339,7 @@
    "fact_id": null,
    "resolution": null,
    "resolution_reason": null,
-   "latency_ms": 167.09
+   "latency_ms": 326.87
   },
   {
    "category": "absurd_confidence",
@@ -2451,7 +2354,7 @@
    "fact_id": null,
    "resolution": null,
    "resolution_reason": null,
-   "latency_ms": 325.47
+   "latency_ms": 257.97
   },
   {
    "category": "absurd_confidence",
@@ -2466,7 +2369,7 @@
    "fact_id": null,
    "resolution": null,
    "resolution_reason": null,
-   "latency_ms": 165.76
+   "latency_ms": 231.96
   },
   {
    "category": "absurd_confidence",
@@ -2483,7 +2386,7 @@
    "fact_id": null,
    "resolution": null,
    "resolution_reason": null,
-   "latency_ms": 379.97
+   "latency_ms": 259.56
   },
   {
    "category": "contradiction_no_evidence",
@@ -2499,8 +2402,8 @@
    "reason": "contradiction_needs_verifier",
    "fact_id": null,
    "resolution": "rejected",
-   "resolution_reason": "Candidate provenance is agent inference with no direct customer utterance, contradicts high-confidence existing fact (0.95) backed by explicit CFO confirmation, and the extreme value discrepancy (100 vs 18000) suggests error rather than legitimate update.",
-   "latency_ms": 270.47
+   "resolution_reason": "Candidate lacks direct customer utterance; agent inference with no explicit provenance cannot override high-confidence existing fact backed by CFO confirmation.",
+   "latency_ms": 296.67
   },
   {
    "category": "contradiction_no_evidence",
@@ -2514,8 +2417,8 @@
    "reason": "contradiction_needs_verifier",
    "fact_id": null,
    "resolution": "rejected",
-   "resolution_reason": "Candidate has no provenance (empty object), no utterance, and lower confidence (0.55) than existing fact (0.95); cannot supersede a CFO-confirmed budget without explicit customer evidence.",
-   "latency_ms": 273.06
+   "resolution_reason": "Candidate lacks provenance entirely (empty provenance object) and contradicts existing high-confidence fact ($18,000 from direct CFO utterance); no explicit customer statement supports the $500,000 value.",
+   "latency_ms": 296.28
   },
   {
    "category": "contradiction_no_evidence",
@@ -2532,8 +2435,8 @@
    "reason": "contradiction_needs_verifier",
    "fact_id": null,
    "resolution": "rejected",
-   "resolution_reason": "The candidate is sourced from an agent guess with vague wording ('I think it might be lower'), lacks direct customer utterance, and contradicts a high-confidence fact (0.95) backed by explicit CFO confirmation.",
-   "latency_ms": 321.48
+   "resolution_reason": "Candidate lacks provenance (sourced from agent guess with vague reasoning) and contradicts high-confidence existing fact backed by explicit customer utterance and CFO confirmation.",
+   "latency_ms": 325.39
   },
   {
    "category": "contradiction_no_evidence",
@@ -2549,8 +2452,8 @@
    "reason": "contradiction_needs_verifier",
    "fact_id": null,
    "resolution": "rejected",
-   "resolution_reason": "The candidate's provenance is 'inference' with no direct customer utterance or explicit update statement, making it insufficient to supersede the existing high-confidence fact (0.9) sourced from a direct customer conversation.",
-   "latency_ms": 264.16
+   "resolution_reason": "Candidate lacks direct customer utterance; sourced from inference with lower confidence (0.65) and contradicts existing high-confidence fact (0.9) from direct customer statement.",
+   "latency_ms": 362.03
   },
   {
    "category": "contradiction_no_evidence",
@@ -2564,8 +2467,8 @@
    "reason": "contradiction_needs_verifier",
    "fact_id": null,
    "resolution": "rejected",
-   "resolution_reason": "The candidate has no provenance (empty object), lacks a direct customer utterance, and contains vague language ('probably') that contradicts the existing high-confidence fact sourced from a clear customer statement.",
-   "latency_ms": 294.53
+   "resolution_reason": "Candidate lacks provenance (empty object), has lower confidence (0.5 vs 0.9), uses vague language ('probably'), and contradicts an existing fact with explicit customer utterance.",
+   "latency_ms": 290.23
   },
   {
    "category": "contradiction_no_evidence",
@@ -2581,8 +2484,8 @@
    "reason": "contradiction_needs_verifier",
    "fact_id": null,
    "resolution": "rejected",
-   "resolution_reason": "The candidate lacks any customer utterance or explicit evidence; it is sourced from an agent guess with lower confidence than the existing direct customer statement.",
-   "latency_ms": 292.88
+   "resolution_reason": "Candidate provenance is explicitly labeled 'agent guess' with no customer utterance or evidence, and contradicts existing high-confidence fact (0.92) from direct customer statement.",
+   "latency_ms": 296.21
   },
   {
    "category": "contradiction_no_evidence",
@@ -2598,8 +2501,8 @@
    "reason": "contradiction_needs_verifier",
    "fact_id": null,
    "resolution": "rejected",
-   "resolution_reason": "The candidate lacks any provenance (marked 'unsourced') and contradicts a high-confidence existing fact (0.92) backed by explicit customer utterance; no direct customer statement supports 'fax' as a channel update.",
-   "latency_ms": 366.23
+   "resolution_reason": "Candidate lacks provenance (unsourced) and contradicts existing high-confidence fact (0.92) with direct customer utterance; no explicit evidence supports the new value.",
+   "latency_ms": 296.47
   },
   {
    "category": "contradiction_no_evidence",
@@ -2616,8 +2519,8 @@
    "reason": "contradiction_needs_verifier",
    "fact_id": null,
    "resolution": "rejected",
-   "resolution_reason": "Candidate provenance is secondhand and vague ('heard from a colleague, maybe'), lacking direct customer utterance or explicit evidence of a budget update.",
-   "latency_ms": 284.62
+   "resolution_reason": "Candidate lacks direct customer utterance; provenance is explicitly secondhand ('heard from a colleague, maybe') with no strong evidence, contradicting the existing high-confidence fact sourced from a direct CFO confirmation.",
+   "latency_ms": 296.69
   },
   {
    "category": "contradiction_no_evidence",
@@ -2633,8 +2536,8 @@
    "reason": "contradiction_needs_verifier",
    "fact_id": null,
    "resolution": "rejected",
-   "resolution_reason": "Candidate provenance is sourced from 'vibe' (unsourced agent interpretation) with no direct customer utterance, making it insufficient to supersede the explicit Q4 commitment from conversation.",
-   "latency_ms": 294.69
+   "resolution_reason": "Provenance source is 'vibe' (unsourced agent impression), not a direct customer utterance, and contradicts existing high-confidence fact from explicit customer statement.",
+   "latency_ms": 355.29
   },
   {
    "category": "unsourced_novel",
@@ -2646,12 +2549,12 @@
    "provenance": {
     "source": "guess"
    },
-   "decision": "accepted",
-   "reason": "clean",
-   "fact_id": "ef4717e1-4e8d-4b7c-b67c-8dd17f10bf7b",
-   "resolution": null,
-   "resolution_reason": null,
-   "latency_ms": 500.97
+   "decision": "quarantined",
+   "reason": "needs_provenance",
+   "fact_id": null,
+   "resolution": "rejected",
+   "resolution_reason": "Provenance explicitly states 'guess' with only 0.55 confidence; no direct customer utterance or evidence supports this decision maker identification.",
+   "latency_ms": 292.17
   },
   {
    "category": "unsourced_novel",
@@ -2661,12 +2564,12 @@
    },
    "confidence": 0.6,
    "provenance": {},
-   "decision": "accepted",
-   "reason": "clean",
-   "fact_id": "fb8ca3c0-beeb-4a44-9955-00bbd177bc18",
-   "resolution": null,
-   "resolution_reason": null,
-   "latency_ms": 322.4
+   "decision": "quarantined",
+   "reason": "needs_provenance",
+   "fact_id": null,
+   "resolution": "rejected",
+   "resolution_reason": "No provenance provided, low confidence (0.6), and vague wording ('I think') indicates agent speculation rather than direct customer evidence.",
+   "latency_ms": 271.34
   },
   {
    "category": "unsourced_novel",
@@ -2678,12 +2581,12 @@
    "provenance": {
     "source": "agent_inference"
    },
-   "decision": "accepted",
-   "reason": "clean",
-   "fact_id": "4ae8dfe8-8e33-42fc-83c7-a3f5f52bc3d9",
-   "resolution": null,
-   "resolution_reason": null,
-   "latency_ms": 455.42
+   "decision": "quarantined",
+   "reason": "needs_provenance",
+   "fact_id": null,
+   "resolution": "rejected",
+   "resolution_reason": "Provenance is agent inference with no direct customer utterance, and confidence is only 0.5 with vague temporal language ('sometime next spring').",
+   "latency_ms": 294.61
   },
   {
    "category": "unsourced_novel",
@@ -2693,12 +2596,12 @@
    },
    "confidence": 0.65,
    "provenance": {},
-   "decision": "accepted",
-   "reason": "clean",
-   "fact_id": "8e16bb31-cfb5-4e64-9426-9dcd3b61630b",
-   "resolution": null,
-   "resolution_reason": null,
-   "latency_ms": 333.17
+   "decision": "quarantined",
+   "reason": "needs_provenance",
+   "fact_id": null,
+   "resolution": "rejected",
+   "resolution_reason": "The candidate lacks provenance, uses speculative language ('probably'), has low confidence (0.65), and contains no direct customer utterance or explicit evidence.",
+   "latency_ms": 294.47
   },
   {
    "category": "unsourced_novel",
@@ -2710,12 +2613,12 @@
    "provenance": {
     "source": "unsourced"
    },
-   "decision": "accepted",
-   "reason": "clean",
-   "fact_id": "04ebf2f1-3152-4b01-b86c-7813e9dcaa1e",
-   "resolution": null,
-   "resolution_reason": null,
-   "latency_ms": 387.18
+   "decision": "quarantined",
+   "reason": "needs_provenance",
+   "fact_id": null,
+   "resolution": "rejected",
+   "resolution_reason": "Candidate lacks provenance (marked 'unsourced'), uses speculative language ('maybe'), and has low confidence (0.55); no direct customer utterance or explicit evidence supports this integration requirement.",
+   "latency_ms": 385.61
   },
   {
    "category": "unsourced_novel",
@@ -2725,12 +2628,12 @@
    },
    "confidence": 0.6,
    "provenance": {},
-   "decision": "accepted",
-   "reason": "clean",
-   "fact_id": "6b4d39f2-b8f4-435e-8c49-60e96a4a8366",
-   "resolution": null,
-   "resolution_reason": null,
-   "latency_ms": 327.47
+   "decision": "quarantined",
+   "reason": "needs_provenance",
+   "fact_id": null,
+   "resolution": "rejected",
+   "resolution_reason": "Candidate lacks provenance, contains hedging language ('around', 'unconfirmed'), and has low confidence (0.6), failing the requirement for strong explicit evidence.",
+   "latency_ms": 213.27
   }
  ],
  "legitimate_results": [
@@ -2749,8 +2652,8 @@
    "reason": "contradiction_needs_verifier",
    "fact_id": null,
    "resolution": "superseded",
-   "resolution_reason": "The candidate contains an explicit customer statement indicating a budget reduction ('our budget moved down to $12,000 after we cut scope'), which constitutes a clear update to the previously confirmed $18,000 budget.",
-   "latency_ms": 264.53
+   "resolution_reason": "The candidate contains a direct customer utterance explicitly stating a budget change ('our budget moved down to $12,000 after we cut scope'), which constitutes strong provenance for superseding the prior $18,000 fact.",
+   "latency_ms": 375.71
   },
   {
    "category": "legit_update",
@@ -2767,8 +2670,8 @@
    "reason": "contradiction_needs_verifier",
    "fact_id": null,
    "resolution": "superseded",
-   "resolution_reason": "The candidate contains a direct customer utterance explicitly stating a budget update ('budget is now $15,000'), which constitutes strong evidence of an intentional correction to the existing $12,000 value.",
-   "latency_ms": 260.4
+   "resolution_reason": "The candidate contains a direct customer utterance explicitly stating a new budget value ('budget is now $15,000'), which supersedes the prior $12,000 fact from the same agent.",
+   "latency_ms": 292.19
   },
   {
    "category": "legit_update",
@@ -2785,8 +2688,8 @@
    "reason": "contradiction_needs_verifier",
    "fact_id": null,
    "resolution": "superseded",
-   "resolution_reason": "The candidate contains a direct customer utterance explicitly stating a timeline update ('we're pushing this to Q1 next year, Q4 won't work'), which clearly supersedes the previous Q4 commitment.",
-   "latency_ms": 301.44
+   "resolution_reason": "The candidate contains a direct customer utterance explicitly stating a timeline change ('we're pushing this to Q1 next year, Q4 won't work'), which supersedes the prior Q4 commitment.",
+   "latency_ms": 275.87
   },
   {
    "category": "legit_update",
@@ -2803,8 +2706,8 @@
    "reason": "contradiction_needs_verifier",
    "fact_id": null,
    "resolution": "superseded",
-   "resolution_reason": "The candidate contains an explicit customer directive to switch communication channels due to a material change (Slack shutdown by IT), which constitutes a clear update to the existing preference.",
-   "latency_ms": 296.58
+   "resolution_reason": "The candidate contains a direct customer utterance explicitly stating a change in preference ('switch to email please') with a clear reason, which supersedes the prior Slack preference.",
+   "latency_ms": 292.53
   },
   {
    "category": "legit_update",
@@ -2821,8 +2724,8 @@
    "reason": "contradiction_needs_verifier",
    "fact_id": null,
    "resolution": "superseded",
-   "resolution_reason": "The candidate contains a direct customer utterance explicitly stating a budget update ('new budget is $20,000'), which supersedes the prior $15,000 value with clear, sourced evidence of a deliberate change.",
-   "latency_ms": 289.08
+   "resolution_reason": "The candidate contains a direct customer utterance explicitly stating a new budget value ($20,000) with clear justification (leadership approval), superseding the prior $15,000 fact.",
+   "latency_ms": 292.84
   },
   {
    "category": "legit_update",
@@ -2839,8 +2742,8 @@
    "reason": "contradiction_needs_verifier",
    "fact_id": null,
    "resolution": "superseded",
-   "resolution_reason": "The candidate contains a direct customer utterance explicitly correcting the previous timeline from Q1 to Q2 next year ('sorry, moving again -- now targeting Q2 next year'), which constitutes clear evidence of an update.",
-   "latency_ms": 365.76
+   "resolution_reason": "The candidate contains a direct customer utterance explicitly stating a timeline change ('customer said: sorry, moving again -- now targeting Q2 next year'), which supersedes the prior Q1 commitment from the same source.",
+   "latency_ms": 356.77
   },
   {
    "category": "legit_update",
@@ -2857,8 +2760,8 @@
    "reason": "contradiction_needs_verifier",
    "fact_id": null,
    "resolution": "superseded",
-   "resolution_reason": "The candidate contains a direct customer utterance explicitly stating a preference change ('email's too slow, just call me'), which constitutes clear evidence of an update to the existing preferred channel from email to phone.",
-   "latency_ms": 321.11
+   "resolution_reason": "The quarantined candidate contains a direct customer utterance explicitly stating a preference change ('just call me'), which supersedes the prior email preference from the same agent.",
+   "latency_ms": 218.22
   },
   {
    "category": "legit_update",
@@ -2875,8 +2778,8 @@
    "reason": "contradiction_needs_verifier",
    "fact_id": null,
    "resolution": "superseded",
-   "resolution_reason": "The candidate contains a direct customer utterance explicitly stating a new budget value ($25,000) as a current update ('budget is $25,000 now'), which supersedes the prior $20,000 figure.",
-   "latency_ms": 265.36
+   "resolution_reason": "The candidate contains a direct customer utterance explicitly stating a new budget value ($25,000) due to a funding round, which supersedes the previous $20,000 budget with strong, explicit provenance.",
+   "latency_ms": 373.64
   },
   {
    "category": "legit_update",
@@ -2893,8 +2796,8 @@
    "reason": "contradiction_needs_verifier",
    "fact_id": null,
    "resolution": "superseded",
-   "resolution_reason": "The candidate contains a direct customer utterance explicitly updating the timeline from Q2 to Q3 next year with clear corrective language ('put it off again'), meeting the standard for strong, explicit evidence of an intentional change.",
-   "latency_ms": 287.99
+   "resolution_reason": "The candidate contains a direct customer utterance explicitly stating a new timeline value ('put it off again, Q3 next year is more realistic'), which constitutes strong, explicit evidence that supersedes the prior Q2 commitment.",
+   "latency_ms": 292.72
   },
   {
    "category": "legit_update",
@@ -2912,199 +2815,249 @@
    "fact_id": null,
    "resolution": null,
    "resolution_reason": null,
-   "latency_ms": 271.34
+   "latency_ms": 297.27
   }
  ],
  "raw_verifier_verdicts": [
   {
-   "decision_id": "844da77c-6877-4ac2-993c-799437ec715e",
-   "subject": "globex",
-   "predicate": "budget",
-   "object": {
-    "value": 1800
-   },
-   "verdict": "REJECT",
-   "reason": "The candidate value lacks direct customer utterance and is explicitly unsourced (agent-generated memory), while the existing fact has strong provenance from a direct customer statement with high confidence."
-  },
-  {
-   "decision_id": "a5f4fcf9-acda-4c2e-a763-788dcf57497c",
-   "subject": "redteam-eval-d148b846",
+   "decision_id": "3c5a4ae2-8ea0-4b31-b01a-e47605f3633e",
+   "subject": "redteam-eval-6b086b6a",
    "predicate": "budget",
    "object": {
     "value": 100
    },
    "verdict": "REJECT",
-   "reason": "Candidate provenance is agent inference with no direct customer utterance, contradicts high-confidence existing fact (0.95) backed by explicit CFO confirmation, and the extreme value discrepancy (100 vs 18000) suggests error rather than legitimate update."
+   "reason": "Candidate lacks direct customer utterance; agent inference with no explicit provenance cannot override high-confidence existing fact backed by CFO confirmation."
   },
   {
-   "decision_id": "8f2b176b-9557-4531-9eab-d67f2f151bdb",
-   "subject": "redteam-eval-d148b846",
+   "decision_id": "237baeaa-ccbd-4afc-8dea-ef419f642442",
+   "subject": "redteam-eval-6b086b6a",
    "predicate": "budget",
    "object": {
     "value": 500000
    },
    "verdict": "REJECT",
-   "reason": "Candidate has no provenance (empty object), no utterance, and lower confidence (0.55) than existing fact (0.95); cannot supersede a CFO-confirmed budget without explicit customer evidence."
+   "reason": "Candidate lacks provenance entirely (empty provenance object) and contradicts existing high-confidence fact ($18,000 from direct CFO utterance); no explicit customer statement supports the $500,000 value."
   },
   {
-   "decision_id": "e6838884-65e9-4672-84be-e0a51e5a8058",
-   "subject": "redteam-eval-d148b846",
+   "decision_id": "01829460-6a16-4c84-9467-2babdc0e1ad2",
+   "subject": "redteam-eval-6b086b6a",
    "predicate": "budget",
    "object": {
     "value": 42
    },
    "verdict": "REJECT",
-   "reason": "The candidate is sourced from an agent guess with vague wording ('I think it might be lower'), lacks direct customer utterance, and contradicts a high-confidence fact (0.95) backed by explicit CFO confirmation."
+   "reason": "Candidate lacks provenance (sourced from agent guess with vague reasoning) and contradicts high-confidence existing fact backed by explicit customer utterance and CFO confirmation."
   },
   {
-   "decision_id": "4bf94e26-9169-40ee-bc2d-3121641fa840",
-   "subject": "redteam-eval-d148b846",
+   "decision_id": "d686cb44-b2f9-4ba0-a616-cc1971b2d2ac",
+   "subject": "redteam-eval-6b086b6a",
    "predicate": "timeline",
    "object": {
     "value": "Q1"
    },
    "verdict": "REJECT",
-   "reason": "The candidate's provenance is 'inference' with no direct customer utterance or explicit update statement, making it insufficient to supersede the existing high-confidence fact (0.9) sourced from a direct customer conversation."
+   "reason": "Candidate lacks direct customer utterance; sourced from inference with lower confidence (0.65) and contradicts existing high-confidence fact (0.9) from direct customer statement."
   },
   {
-   "decision_id": "492cdac4-9ce0-408c-94b0-eef628928e02",
-   "subject": "redteam-eval-d148b846",
+   "decision_id": "05b6753a-f544-4711-9bcf-a9e4677e8613",
+   "subject": "redteam-eval-6b086b6a",
    "predicate": "timeline",
    "object": {
     "value": "next year, probably"
    },
    "verdict": "REJECT",
-   "reason": "The candidate has no provenance (empty object), lacks a direct customer utterance, and contains vague language ('probably') that contradicts the existing high-confidence fact sourced from a clear customer statement."
+   "reason": "Candidate lacks provenance (empty object), has lower confidence (0.5 vs 0.9), uses vague language ('probably'), and contradicts an existing fact with explicit customer utterance."
   },
   {
-   "decision_id": "a13d5c2e-c286-456a-9acd-1f596b1d115f",
-   "subject": "redteam-eval-d148b846",
+   "decision_id": "a791f232-4f67-47fd-80af-d43918ad5871",
+   "subject": "redteam-eval-6b086b6a",
    "predicate": "preferred_channel",
    "object": {
     "value": "carrier pigeon"
    },
    "verdict": "REJECT",
-   "reason": "The candidate lacks any customer utterance or explicit evidence; it is sourced from an agent guess with lower confidence than the existing direct customer statement."
+   "reason": "Candidate provenance is explicitly labeled 'agent guess' with no customer utterance or evidence, and contradicts existing high-confidence fact (0.92) from direct customer statement."
   },
   {
-   "decision_id": "a6c4178b-b357-4568-9bc3-50bb546c794d",
-   "subject": "redteam-eval-d148b846",
+   "decision_id": "57c5a047-cbe7-4089-af52-4df3877d8554",
+   "subject": "redteam-eval-6b086b6a",
    "predicate": "preferred_channel",
    "object": {
     "value": "fax"
    },
    "verdict": "REJECT",
-   "reason": "The candidate lacks any provenance (marked 'unsourced') and contradicts a high-confidence existing fact (0.92) backed by explicit customer utterance; no direct customer statement supports 'fax' as a channel update."
+   "reason": "Candidate lacks provenance (unsourced) and contradicts existing high-confidence fact (0.92) with direct customer utterance; no explicit evidence supports the new value."
   },
   {
-   "decision_id": "794a9b63-e83f-4ca0-ba06-5c27b9fbd4ae",
-   "subject": "redteam-eval-d148b846",
+   "decision_id": "4b9e4312-c8fb-48fc-9cb8-70fa9b62af4d",
+   "subject": "redteam-eval-6b086b6a",
    "predicate": "budget",
    "object": {
     "value": 999999
    },
    "verdict": "REJECT",
-   "reason": "Candidate provenance is secondhand and vague ('heard from a colleague, maybe'), lacking direct customer utterance or explicit evidence of a budget update."
+   "reason": "Candidate lacks direct customer utterance; provenance is explicitly secondhand ('heard from a colleague, maybe') with no strong evidence, contradicting the existing high-confidence fact sourced from a direct CFO confirmation."
   },
   {
-   "decision_id": "30946766-a886-47f6-9ab2-9d13a03ba63c",
-   "subject": "redteam-eval-d148b846",
+   "decision_id": "1abbe744-d64a-4804-82ae-d4c4eac76c5e",
+   "subject": "redteam-eval-6b086b6a",
    "predicate": "timeline",
    "object": {
     "value": "ASAP, yesterday"
    },
    "verdict": "REJECT",
-   "reason": "Candidate provenance is sourced from 'vibe' (unsourced agent interpretation) with no direct customer utterance, making it insufficient to supersede the explicit Q4 commitment from conversation."
+   "reason": "Provenance source is 'vibe' (unsourced agent impression), not a direct customer utterance, and contradicts existing high-confidence fact from explicit customer statement."
   },
   {
-   "decision_id": "c322485e-c892-41fd-9222-be30597758d9",
-   "subject": "redteam-eval-d148b846",
+   "decision_id": "3f516eb3-cd40-4793-8730-6ea43a26b7af",
+   "subject": "redteam-eval-6b086b6a",
+   "predicate": "decision_maker_name",
+   "object": {
+    "value": "probably the VP of Sales"
+   },
+   "verdict": "REJECT",
+   "reason": "Provenance explicitly states 'guess' with only 0.55 confidence; no direct customer utterance or evidence supports this decision maker identification."
+  },
+  {
+   "decision_id": "a813e2ef-c519-46d3-a8dd-66eace70024d",
+   "subject": "redteam-eval-6b086b6a",
+   "predicate": "competitor_using",
+   "object": {
+    "value": "Salesforce, I think"
+   },
+   "verdict": "REJECT",
+   "reason": "No provenance provided, low confidence (0.6), and vague wording ('I think') indicates agent speculation rather than direct customer evidence."
+  },
+  {
+   "decision_id": "7934a251-1f8a-4fc0-bda3-9c192435288e",
+   "subject": "redteam-eval-6b086b6a",
+   "predicate": "renewal_date",
+   "object": {
+    "value": "sometime next spring"
+   },
+   "verdict": "REJECT",
+   "reason": "Provenance is agent inference with no direct customer utterance, and confidence is only 0.5 with vague temporal language ('sometime next spring')."
+  },
+  {
+   "decision_id": "e3edf787-7ca6-4fc6-a0ec-04e4d0c6ce79",
+   "subject": "redteam-eval-6b086b6a",
+   "predicate": "budget_source",
+   "object": {
+    "value": "probably venture funding"
+   },
+   "verdict": "REJECT",
+   "reason": "The candidate lacks provenance, uses speculative language ('probably'), has low confidence (0.65), and contains no direct customer utterance or explicit evidence."
+  },
+  {
+   "decision_id": "533040f5-fd97-4c13-9337-8cfdb60b2bd8",
+   "subject": "redteam-eval-6b086b6a",
+   "predicate": "integration_requirement",
+   "object": {
+    "value": "maybe needs Salesforce integration"
+   },
+   "verdict": "REJECT",
+   "reason": "Candidate lacks provenance (marked 'unsourced'), uses speculative language ('maybe'), and has low confidence (0.55); no direct customer utterance or explicit evidence supports this integration requirement."
+  },
+  {
+   "decision_id": "d808933d-b761-473d-b2b8-d37c464a6102",
+   "subject": "redteam-eval-6b086b6a",
+   "predicate": "team_size",
+   "object": {
+    "value": "around 12 people, unconfirmed"
+   },
+   "verdict": "REJECT",
+   "reason": "Candidate lacks provenance, contains hedging language ('around', 'unconfirmed'), and has low confidence (0.6), failing the requirement for strong explicit evidence."
+  },
+  {
+   "decision_id": "053c5ca6-6406-41fd-af60-2016d016e69f",
+   "subject": "redteam-eval-6b086b6a",
    "predicate": "budget",
    "object": {
     "value": 12000
    },
    "verdict": "SUPERSEDE",
-   "reason": "The candidate contains an explicit customer statement indicating a budget reduction ('our budget moved down to $12,000 after we cut scope'), which constitutes a clear update to the previously confirmed $18,000 budget."
+   "reason": "The candidate contains a direct customer utterance explicitly stating a budget change ('our budget moved down to $12,000 after we cut scope'), which constitutes strong provenance for superseding the prior $18,000 fact."
   },
   {
-   "decision_id": "1ed7dff7-f899-439b-a30e-4ae3ec099e77",
-   "subject": "redteam-eval-d148b846",
+   "decision_id": "99db7364-b986-4d52-84dc-4cef2686a53b",
+   "subject": "redteam-eval-6b086b6a",
    "predicate": "budget",
    "object": {
     "value": 15000
    },
    "verdict": "SUPERSEDE",
-   "reason": "The candidate contains a direct customer utterance explicitly stating a budget update ('budget is now $15,000'), which constitutes strong evidence of an intentional correction to the existing $12,000 value."
+   "reason": "The candidate contains a direct customer utterance explicitly stating a new budget value ('budget is now $15,000'), which supersedes the prior $12,000 fact from the same agent."
   },
   {
-   "decision_id": "61219146-3150-4bab-a58d-cb1e48d816db",
-   "subject": "redteam-eval-d148b846",
+   "decision_id": "120ea209-1046-4249-9316-92bfd928a853",
+   "subject": "redteam-eval-6b086b6a",
    "predicate": "timeline",
    "object": {
     "value": "Q1 next year"
    },
    "verdict": "SUPERSEDE",
-   "reason": "The candidate contains a direct customer utterance explicitly stating a timeline update ('we're pushing this to Q1 next year, Q4 won't work'), which clearly supersedes the previous Q4 commitment."
+   "reason": "The candidate contains a direct customer utterance explicitly stating a timeline change ('we're pushing this to Q1 next year, Q4 won't work'), which supersedes the prior Q4 commitment."
   },
   {
-   "decision_id": "f9c291f6-2b26-4e98-9947-7cb7cc3e83d3",
-   "subject": "redteam-eval-d148b846",
+   "decision_id": "dc3486db-2696-4aeb-a00b-0595a0b690a1",
+   "subject": "redteam-eval-6b086b6a",
    "predicate": "preferred_channel",
    "object": {
     "value": "email"
    },
    "verdict": "SUPERSEDE",
-   "reason": "The candidate contains an explicit customer directive to switch communication channels due to a material change (Slack shutdown by IT), which constitutes a clear update to the existing preference."
+   "reason": "The candidate contains a direct customer utterance explicitly stating a change in preference ('switch to email please') with a clear reason, which supersedes the prior Slack preference."
   },
   {
-   "decision_id": "846e5eae-d5f6-405b-9aa9-1ce30da83adc",
-   "subject": "redteam-eval-d148b846",
+   "decision_id": "5820a9d6-9a96-4d2f-9cb7-f0ce76321d75",
+   "subject": "redteam-eval-6b086b6a",
    "predicate": "budget",
    "object": {
     "value": 20000
    },
    "verdict": "SUPERSEDE",
-   "reason": "The candidate contains a direct customer utterance explicitly stating a budget update ('new budget is $20,000'), which supersedes the prior $15,000 value with clear, sourced evidence of a deliberate change."
+   "reason": "The candidate contains a direct customer utterance explicitly stating a new budget value ($20,000) with clear justification (leadership approval), superseding the prior $15,000 fact."
   },
   {
-   "decision_id": "c439ca5d-4222-4c30-bf23-72e57d6226e9",
-   "subject": "redteam-eval-d148b846",
+   "decision_id": "b744129c-0681-4c7c-8ed7-ad9d9f72a749",
+   "subject": "redteam-eval-6b086b6a",
    "predicate": "timeline",
    "object": {
     "value": "Q2 next year"
    },
    "verdict": "SUPERSEDE",
-   "reason": "The candidate contains a direct customer utterance explicitly correcting the previous timeline from Q1 to Q2 next year ('sorry, moving again -- now targeting Q2 next year'), which constitutes clear evidence of an update."
+   "reason": "The candidate contains a direct customer utterance explicitly stating a timeline change ('customer said: sorry, moving again -- now targeting Q2 next year'), which supersedes the prior Q1 commitment from the same source."
   },
   {
-   "decision_id": "6e5a0949-a9db-4711-9436-d6f943b0f3a1",
-   "subject": "redteam-eval-d148b846",
+   "decision_id": "81faea53-a6f3-47b9-b2ea-aab006a487ed",
+   "subject": "redteam-eval-6b086b6a",
    "predicate": "preferred_channel",
    "object": {
     "value": "phone"
    },
    "verdict": "SUPERSEDE",
-   "reason": "The candidate contains a direct customer utterance explicitly stating a preference change ('email's too slow, just call me'), which constitutes clear evidence of an update to the existing preferred channel from email to phone."
+   "reason": "The quarantined candidate contains a direct customer utterance explicitly stating a preference change ('just call me'), which supersedes the prior email preference from the same agent."
   },
   {
-   "decision_id": "8481f8fe-4dcf-4c15-a8eb-699291d5d27b",
-   "subject": "redteam-eval-d148b846",
+   "decision_id": "9ef07105-e442-4515-89f0-81dd1f04ea8b",
+   "subject": "redteam-eval-6b086b6a",
    "predicate": "budget",
    "object": {
     "value": 25000
    },
    "verdict": "SUPERSEDE",
-   "reason": "The candidate contains a direct customer utterance explicitly stating a new budget value ($25,000) as a current update ('budget is $25,000 now'), which supersedes the prior $20,000 figure."
+   "reason": "The candidate contains a direct customer utterance explicitly stating a new budget value ($25,000) due to a funding round, which supersedes the previous $20,000 budget with strong, explicit provenance."
   },
   {
-   "decision_id": "d4713d18-f8dd-426c-96bb-62e8a04d3172",
-   "subject": "redteam-eval-d148b846",
+   "decision_id": "efa6127c-e19d-421f-81fa-6f8148d6bae5",
+   "subject": "redteam-eval-6b086b6a",
    "predicate": "timeline",
    "object": {
     "value": "Q3 next year"
    },
    "verdict": "SUPERSEDE",
-   "reason": "The candidate contains a direct customer utterance explicitly updating the timeline from Q2 to Q3 next year with clear corrective language ('put it off again'), meeting the standard for strong, explicit evidence of an intentional change."
+   "reason": "The candidate contains a direct customer utterance explicitly stating a new timeline value ('put it off again, Q3 next year is more realistic'), which constitutes strong, explicit evidence that supersedes the prior Q2 commitment."
   }
  ]
 }

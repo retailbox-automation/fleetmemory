@@ -36,7 +36,11 @@ class GateResult:
         return self.decision in (ACCEPTED, ACCEPTED_SUPERSEDING)
 
 
-def evaluate(cur, *, subject_id, predicate, obj, confidence) -> GateResult:
+def _has_utterance(provenance) -> bool:
+    return bool(((provenance or {}).get("utterance") or "").strip())
+
+
+def evaluate(cur, *, subject_id, predicate, obj, confidence, provenance=None) -> GateResult:
     """Deterministic gate checks against the current active facts."""
     checks = {}
 
@@ -73,10 +77,12 @@ def evaluate(cur, *, subject_id, predicate, obj, confidence) -> GateResult:
     conflicting = [r for r in active if r["object"] != obj]
     if conflicting:
         strongest = max(r["confidence"] for r in conflicting)
-        if confidence >= strongest + SUPERSEDE_MARGIN:
+        # confidence alone never overwrites: an unsourced write must not
+        # supersede silently no matter how sure the writer claims to be
+        if confidence >= strongest + SUPERSEDE_MARGIN and _has_utterance(provenance):
             checks["contradiction"] = (
                 f"supersedes {len(conflicting)} fact(s), "
-                f"new {confidence} >= old {strongest} + {SUPERSEDE_MARGIN}"
+                f"new {confidence} >= old {strongest} + {SUPERSEDE_MARGIN}, sourced"
             )
             return GateResult(
                 ACCEPTED_SUPERSEDING,
@@ -86,10 +92,17 @@ def evaluate(cur, *, subject_id, predicate, obj, confidence) -> GateResult:
             )
         checks["contradiction"] = (
             f"conflicts with {len(conflicting)} active fact(s), "
-            f"new {confidence} < old {strongest} + {SUPERSEDE_MARGIN}"
+            f"new {confidence} vs old {strongest} (margin {SUPERSEDE_MARGIN}, "
+            f"sourced={_has_utterance(provenance)})"
         )
         return GateResult(QUARANTINED, "contradiction_needs_verifier", checks)
     checks["contradiction"] = "none"
+
+    # novel claims need a source too: nothing to contradict is not a free pass
+    if not _has_utterance(provenance):
+        checks["provenance"] = "no direct utterance"
+        return GateResult(QUARANTINED, "needs_provenance", checks)
+    checks["provenance"] = "ok"
 
     return GateResult(ACCEPTED, "clean", checks)
 

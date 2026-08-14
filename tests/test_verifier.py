@@ -56,3 +56,20 @@ def test_resolved_rows_not_reprocessed(conn):
     verifier.resolve_pending(conn, judge=lambda ex, c: {"verdict": "REJECT", "reason": "x"})
     again = verifier.resolve_pending(conn, judge=lambda ex, c: {"verdict": "SUPERSEDE", "reason": "y"})
     assert again == []
+
+
+def test_needs_provenance_judged_not_autorejected(conn):
+    """Unsourced novel claims reach the judge (existing=[]), not the auto-reject path."""
+    r = facts.assert_fact(conn, subject_key="acme", predicate="competitor",
+                          obj={"value": "Initech"}, confidence=0.9, agent_name="rogue")
+    assert r["reason"] == "needs_provenance"
+    seen = {}
+
+    def judge(ex, cand):
+        seen["existing"] = ex
+        return {"verdict": "REJECT", "reason": "unsourced"}
+
+    out = verifier.resolve_pending(conn, judge=judge)
+    assert out[0]["verdict"] == "REJECT"
+    assert seen["existing"] == []
+    assert facts.current_facts(conn, "acme", predicate="competitor") == []

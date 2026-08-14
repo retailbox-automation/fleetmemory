@@ -41,7 +41,8 @@ def assert_fact(conn, *, subject_key: str, predicate: str, obj, confidence: floa
         agent_id = ensure_agent(cur, agent_name) if agent_name else None
 
         result = gate.evaluate(
-            cur, subject_id=subject_id, predicate=predicate, obj=obj, confidence=confidence
+            cur, subject_id=subject_id, predicate=predicate, obj=obj,
+            confidence=confidence, provenance=provenance,
         )
         payload = {"subject": subject_key, "predicate": predicate,
                    "object": obj, "confidence": confidence,
